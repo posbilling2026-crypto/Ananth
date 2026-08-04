@@ -529,6 +529,8 @@
 <body>
 <div id="app"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 (function(){
   "use strict";
@@ -4767,14 +4769,102 @@
       '<div class="modal-actions">'+
         '<button class="btn btn-primary btn-block" id="mr-print">&#128424; Print / Save as PDF</button>'+
       '</div>'+
+      '<div class="modal-actions" style="margin-top:8px;">'+
+        '<button class="btn btn-amber btn-block" id="mr-share">&#128228; Share PDF</button>'+
+        '<button class="btn btn-ghost btn-block" id="mr-download">&#11015; Download PDF</button>'+
+      '</div>'+
       '<button class="btn btn-ghost btn-block" id="mr-done" style="margin-top:8px;">Done</button>'+
     '</div></div>';
+  }
+
+  // Renders the on-screen statement into a real PDF file (not just the
+  // browser print dialog) using html2canvas + jsPDF, so it can be shared
+  // as a file (WhatsApp/email/etc via the Web Share API) or downloaded
+  // directly. Falls back to a plain download if native sharing isn't
+  // available on the device/browser.
+  async function buildMonthlyReportPDFBlob(){
+    var target = document.querySelector('#print-area .stmt-doc');
+    if(!target || !window.html2canvas || !window.jspdf) return null;
+    var canvas = await html2canvas(target, {scale:2, backgroundColor:'#ffffff', useCORS:true});
+    var imgData = canvas.toDataURL('image/png');
+    var jsPDF = window.jspdf.jsPDF;
+    var pdf = new jsPDF('p','pt','a4');
+    var pageWidth = pdf.internal.pageSize.getWidth();
+    var pageHeight = pdf.internal.pageSize.getHeight();
+    var imgWidth = pageWidth;
+    var imgHeight = canvas.height * imgWidth / canvas.width;
+    var heightLeft = imgHeight;
+    var position = 0;
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+    while(heightLeft > 0){
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+    return pdf.output('blob');
+  }
+
+  function monthlyReportFileName(){
+    return 'monthly-statement-'+(state.mrMonth || todayISO())+'.pdf';
+  }
+
+  async function downloadMonthlyReportPDF(){
+    var btn = document.getElementById('mr-download');
+    if(btn){ btn.disabled = true; btn.textContent = 'Preparing…'; }
+    try{
+      var blob = await buildMonthlyReportPDFBlob();
+      if(!blob){ alert('Could not create the PDF.'); return; }
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = monthlyReportFileName();
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+    }catch(e){
+      alert('Could not create the PDF: '+(e.message||e));
+    }finally{
+      if(btn){ btn.disabled = false; btn.innerHTML = '&#11015; Download PDF'; }
+    }
+  }
+
+  async function shareMonthlyReportPDF(){
+    var btn = document.getElementById('mr-share');
+    if(btn){ btn.disabled = true; btn.textContent = 'Preparing…'; }
+    try{
+      var blob = await buildMonthlyReportPDFBlob();
+      if(!blob){ alert('Could not create the PDF.'); return; }
+      var fileName = monthlyReportFileName();
+      var file = null;
+      try{ file = new File([blob], fileName, {type:'application/pdf'}); }catch(e){ /* File ctor unsupported */ }
+      if(file && navigator.canShare && navigator.canShare({files:[file]})){
+        try{
+          await navigator.share({files:[file], title:'Monthly Statement', text: state.shop.name+' — Monthly Statement'});
+          return;
+        }catch(e){
+          if(e && e.name==='AbortError') return; // user cancelled the share sheet
+          // fall through to download
+        }
+      }
+      // Fallback: just download the PDF so it can be shared manually.
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = fileName;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+    }catch(e){
+      alert('Could not share the PDF: '+(e.message||e));
+    }finally{
+      if(btn){ btn.disabled = false; btn.innerHTML = '&#128228; Share PDF'; }
+    }
   }
 
   function bindMonthlyReportModal(){
     var closeBtn = document.getElementById('mr-close');
     var doneBtn = document.getElementById('mr-done');
     var printBtn = document.getElementById('mr-print');
+    var shareBtn = document.getElementById('mr-share');
+    var downloadBtn = document.getElementById('mr-download');
     function closeIt(){ state.showMonthlyReport = false; render(); }
     if(closeBtn) closeBtn.addEventListener('click', closeIt);
     if(doneBtn) doneBtn.addEventListener('click', closeIt);
@@ -4783,6 +4873,8 @@
         requestAnimationFrame(function(){ window.print(); });
       });
     });
+    if(shareBtn) shareBtn.addEventListener('click', shareMonthlyReportPDF);
+    if(downloadBtn) downloadBtn.addEventListener('click', downloadMonthlyReportPDF);
   }
 
   // ---------------- PROFIT (admin only) ----------------
