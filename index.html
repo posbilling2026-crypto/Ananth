@@ -430,33 +430,47 @@
   }
 
   /* ---------- MONTHLY REPORT / PROFESSIONAL STATEMENT ---------- */
-  .stmt-doc{background:#fff;color:#14213D;font-family:'Plus Jakarta Sans',sans-serif;padding:6px 2px;}
-  .stmt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;border-bottom:3px solid var(--ink);padding-bottom:12px;margin-bottom:16px;flex-wrap:wrap;}
-  .stmt-shopname{font-size:19px;font-weight:800;color:var(--ink);}
-  .stmt-shopline{font-size:12px;color:#5C7089;margin-top:2px;}
+  .stmt-doc{background:#fff;color:#14213D;font-family:'Plus Jakarta Sans',sans-serif;padding:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;}
+  .stmt-head{
+    position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;
+    background:linear-gradient(135deg,var(--ink) 0%,var(--ink-light) 100%);
+    color:#fff;padding:24px 28px;
+  }
+  .stmt-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:linear-gradient(90deg,var(--amber),var(--green));}
+  .stmt-brand-row{display:flex;align-items:center;gap:11px;}
+  .stmt-mark{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:16px;color:#fff;flex-shrink:0;}
+  .stmt-shopname{font-size:19px;font-weight:800;color:#fff;letter-spacing:-.01em;}
+  .stmt-shopline{font-size:11.5px;color:rgba(255,255,255,.75);margin-top:2px;}
+  .stmt-shop-lines{margin-top:6px;margin-left:47px;}
   .stmt-title-block{text-align:right;}
-  .stmt-title{font-size:15px;font-weight:800;letter-spacing:.04em;color:var(--ink);}
-  .stmt-period{font-size:12.5px;color:#14213D;margin-top:4px;font-weight:600;}
-  .stmt-printed{font-size:10.5px;color:#5C7089;margin-top:2px;}
-  .stmt-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
-  .stmt-sum-box{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--paper);}
-  .stmt-sum-box .k{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:#5C7089;font-weight:700;}
-  .stmt-sum-box .v{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:800;color:var(--ink);margin-top:3px;}
+  .stmt-title{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:.09em;color:#fff;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);padding:5px 12px;border-radius:20px;}
+  .stmt-period{font-size:12.5px;color:#fff;margin-top:9px;font-weight:700;}
+  .stmt-printed{font-size:10px;color:rgba(255,255,255,.72);margin-top:3px;}
+  .stmt-body{padding:24px 28px 6px;}
+  .stmt-summary-grid{display:flex;gap:10px;margin-bottom:22px;}
+  .stmt-sum-box{flex:1 1 0;min-width:0;border:1px solid var(--line);border-left:4px solid var(--ink);border-radius:9px;padding:11px 12px;background:var(--paper);}
+  .stmt-sum-box.cash{border-left-color:#1E9E5A;}
+  .stmt-sum-box.cheque{border-left-color:var(--amber);}
+  .stmt-sum-box.credit{border-left-color:var(--red);}
+  .stmt-sum-box.grand{border-left-color:var(--ink);background:#fff;box-shadow:var(--shadow-sm);}
+  .stmt-sum-box .k{font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:#5C7089;font-weight:700;}
+  .stmt-sum-box .v{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:800;color:var(--ink);margin-top:4px;}
   .stmt-section{margin-bottom:20px;}
-  .stmt-section-title{font-size:13px;font-weight:800;color:#fff;background:var(--ink);padding:6px 10px;border-radius:6px 6px 0 0;}
-  .stmt-table{width:100%;border-collapse:collapse;font-size:12px;}
-  .stmt-table td, .stmt-table th{padding:6px 10px;border-bottom:1px solid var(--line);}
-  .stmt-table th{text-align:left;background:var(--paper-dark);font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:#5C7089;}
+  .stmt-section-title{font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);padding-bottom:6px;margin-bottom:0;border-bottom:2px solid var(--ink);}
+  .stmt-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+  .stmt-table td, .stmt-table th{padding:7px 10px;border-bottom:1px solid var(--line);}
+  .stmt-table th{text-align:left;background:var(--paper-dark);font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;color:#5C7089;font-weight:700;}
   .stmt-table td.num, .stmt-table th.num{text-align:right;font-family:'JetBrains Mono',monospace;}
   .stmt-table .num{text-align:right;font-family:'JetBrains Mono',monospace;}
-  .stmt-total-row td{font-weight:800;border-top:2px solid var(--ink);border-bottom:none;}
-  .stmt-table-grid{border:1px solid var(--line);border-top:none;}
-  .stmt-grand-total{text-align:right;font-weight:800;font-size:13px;color:var(--ink);padding:8px 10px;border-top:2px solid var(--ink);}
-  .stmt-footer{margin-top:24px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:#5C7089;}
-  .stmt-sign-row{display:flex;justify-content:space-between;margin-top:36px;}
-  .stmt-sign-line{flex:1;max-width:220px;border-top:1px solid #5C7089;padding-top:6px;text-align:center;font-size:11px;}
+  .stmt-table tbody tr:nth-child(even) td{background:#FAFBFE;}
+  .stmt-total-row td{font-weight:800;border-top:2px solid var(--ink);border-bottom:none;background:var(--paper)!important;}
+  .stmt-table-grid{border:1px solid var(--line);border-top:none;border-radius:0 0 9px 9px;overflow:hidden;}
+  .stmt-grand-total{text-align:right;font-weight:800;font-size:13px;color:var(--ink);padding:9px 12px;border:1px solid var(--line);border-top:2px solid var(--ink);background:var(--paper);border-radius:0 0 9px 9px;}
+  .stmt-footer{margin-top:8px;padding:16px 28px 22px;border-top:1px solid var(--line);font-size:10.5px;color:#5C7089;background:var(--paper);}
+  .stmt-sign-row{display:flex;justify-content:space-between;margin-top:38px;gap:20px;}
+  .stmt-sign-line{flex:1;max-width:220px;border-top:1px solid #96A4BC;padding-top:6px;text-align:center;font-size:10.5px;color:var(--text);}
   @media print{
-    .stmt-doc{padding:0;}
+    .stmt-doc{border-radius:0;border:none;}
     .stmt-sum-box{break-inside:avoid;}
     .stmt-section{break-inside:avoid;}
   }
@@ -4705,9 +4719,14 @@
       '<div id="print-area"><div class="stmt-doc">'+
         '<div class="stmt-head">'+
           '<div class="stmt-shop">'+
-            '<div class="stmt-shopname">'+escapeHtml(state.shop.name)+'</div>'+
-            (state.shop.address ? '<div class="stmt-shopline">'+escapeHtml(state.shop.address)+'</div>' : '')+
-            (state.shop.phone ? '<div class="stmt-shopline">'+escapeHtml(state.shop.phone)+'</div>' : '')+
+            '<div class="stmt-brand-row">'+
+              '<div class="stmt-mark">'+escapeHtml((state.shop.name||'S').trim().charAt(0).toUpperCase())+'</div>'+
+              '<div class="stmt-shopname">'+escapeHtml(state.shop.name)+'</div>'+
+            '</div>'+
+            (state.shop.address || state.shop.phone ? '<div class="stmt-shop-lines">'+
+              (state.shop.address ? '<div class="stmt-shopline">'+escapeHtml(state.shop.address)+'</div>' : '')+
+              (state.shop.phone ? '<div class="stmt-shopline">'+escapeHtml(state.shop.phone)+'</div>' : '')+
+            '</div>' : '')+
           '</div>'+
           '<div class="stmt-title-block">'+
             '<div class="stmt-title">MONTHLY SALES STATEMENT</div>'+
@@ -4715,12 +4734,13 @@
             '<div class="stmt-printed">Printed: '+escapeHtml(printedAt)+'</div>'+
           '</div>'+
         '</div>'+
+        '<div class="stmt-body">'+
 
         '<div class="stmt-summary-grid">'+
-          '<div class="stmt-sum-box"><div class="k">Total Cash Sales</div><div class="v">'+money(d.cashSalesTotal)+'</div></div>'+
-          '<div class="stmt-sum-box"><div class="k">Total Cheque Sales</div><div class="v">'+money(d.chequeSalesTotal)+'</div></div>'+
-          '<div class="stmt-sum-box"><div class="k">Total Credit Sales</div><div class="v">'+money(d.creditSalesTotal)+'</div></div>'+
-          '<div class="stmt-sum-box"><div class="k">Grand Total Sales</div><div class="v">'+money(d.grandTotal)+'</div></div>'+
+          '<div class="stmt-sum-box cash"><div class="k">Total Cash Sales</div><div class="v">'+money(d.cashSalesTotal)+'</div></div>'+
+          '<div class="stmt-sum-box cheque"><div class="k">Total Cheque Sales</div><div class="v">'+money(d.chequeSalesTotal)+'</div></div>'+
+          '<div class="stmt-sum-box credit"><div class="k">Total Credit Sales</div><div class="v">'+money(d.creditSalesTotal)+'</div></div>'+
+          '<div class="stmt-sum-box grand"><div class="k">Grand Total Sales</div><div class="v">'+money(d.grandTotal)+'</div></div>'+
         '</div>'+
 
         '<div class="stmt-section"><div class="stmt-section-title">Cash Sales &mdash; Details</div>'+
@@ -4759,6 +4779,7 @@
           '<div class="stmt-grand-total">Total Balance Due: '+money(d.customerBalanceTotal)+'</div>'+
         '</div>'+
 
+        '</div>'+
         '<div class="stmt-footer">'+
           (state.shop.footer ? '<div>'+escapeHtml(state.shop.footer)+'</div>' : '')+
           '<div class="stmt-sign-row"><div class="stmt-sign-line">Prepared By</div><div class="stmt-sign-line">Authorized Signature</div></div>'+
@@ -4791,17 +4812,22 @@
     var pdf = new jsPDF('p','pt','a4');
     var pageWidth = pdf.internal.pageSize.getWidth();
     var pageHeight = pdf.internal.pageSize.getHeight();
-    var imgWidth = pageWidth;
+    // Professional A4 page margin (~10mm) so the statement doesn't run
+    // edge-to-edge on the printed/PDF page.
+    var margin = 28;
+    var contentWidth = pageWidth - margin*2;
+    var contentHeight = pageHeight - margin*2;
+    var imgWidth = contentWidth;
     var imgHeight = canvas.height * imgWidth / canvas.width;
     var heightLeft = imgHeight;
-    var position = 0;
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
+    var position = margin;
+    pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
+    heightLeft -= contentHeight;
     while(heightLeft > 0){
-      position = heightLeft - imgHeight;
+      position = margin - (imgHeight - heightLeft);
       pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+      pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
+      heightLeft -= contentHeight;
     }
     return pdf.output('blob');
   }
