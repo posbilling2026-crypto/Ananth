@@ -407,6 +407,24 @@
   .topbar-printer-btn .dot.ok{background:var(--green);box-shadow:0 0 0 3px rgba(220,38,38,.25);}
   .topbar-printer-btn .dot.off{background:var(--red);}
   .printer-msg{font-size:11.5px;color:var(--text-dim);margin-top:4px;background:var(--paper);border-radius:var(--radius-sm);padding:8px 10px;}
+
+  /* ---------- SYNC STATUS BUTTON (in top title bar) ---------- */
+  .topbar-sync-btn{
+    display:flex;align-items:center;gap:7px;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.35);
+    color:var(--white);border-radius:20px;padding:7px 14px;font-size:12.5px;font-weight:700;
+    min-height:36px;white-space:nowrap;transition:background .15s ease;
+  }
+  .topbar-sync-btn:hover{background:rgba(255,255,255,.16);}
+  .topbar-sync-btn.err{background:var(--amber);color:var(--ink);border-color:var(--amber);}
+  .topbar-sync-btn .sync-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--green);}
+  .topbar-sync-btn.err .sync-dot{background:var(--red);}
+  .topbar-sync-btn.syncing .sync-dot{background:var(--amber);animation:sync-pulse 1s ease-in-out infinite;}
+  @keyframes sync-pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+  @media (max-width:640px){
+    .topbar-sync-btn{padding:6px 10px;font-size:11px;max-width:32vw;}
+    .topbar-sync-btn span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  }
   .page-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
   .busy-overlay{position:fixed;inset:0;background:rgba(15,33,61,.6);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;z-index:200;}
   .busy-box{background:var(--white);border-radius:var(--radius-lg);padding:26px 34px;display:flex;flex-direction:column;align-items:center;gap:14px;box-shadow:var(--shadow-lg);}
@@ -601,6 +619,8 @@
     bootLoadFailed:false,
     storageOk:true,
     storageErr:'',
+    lastSyncAt:null,
+    manualSyncActive:false,
     view:'billing',
     loginErr:'',
     showAdminPin:false,
@@ -2034,10 +2054,19 @@
     }, 'image/png');
   }
 
+  // Wraps fetch with a hard timeout so a slow/cold-starting Apps Script
+  // request fails fast instead of leaving the UI (or a poll) hanging for
+  // 20-30+ seconds. Aborts the in-flight request once the timeout hits.
+  function fetchWithTimeout(url, opts, timeoutMs){
+    var controller = new AbortController();
+    var timer = setTimeout(function(){ controller.abort(); }, timeoutMs || 8000);
+    opts = Object.assign({}, opts||{}, {signal: controller.signal});
+    return fetch(url, opts).finally(function(){ clearTimeout(timer); });
+  }
   async function storageGet(key, isRetry){
     if(!sheetConfigured()) return null;
     try{
-      var res = await fetch(CONFIG.SHEET_API_URL+'?action=get&key='+encodeURIComponent(key));
+      var res = await fetchWithTimeout(CONFIG.SHEET_API_URL+'?action=get&key='+encodeURIComponent(key), null, 8000);
       if(!res.ok) throw new Error('HTTP '+res.status);
       var data = await res.json();
       state.storageOk = true;
@@ -2046,8 +2075,9 @@
       if(!isRetry){
         // Apps Script cold-starts and dropped mobile connections both look
         // like a one-off failure here — give it a single retry after a
-        // short pause before treating it as a real failure.
-        await new Promise(function(r){ setTimeout(r, 900); });
+        // short pause before treating it as a real failure. Retry fast
+        // (300ms) since the timeout above already ate most of the wait.
+        await new Promise(function(r){ setTimeout(r, 300); });
         return storageGet(key, true);
       }
       state.storageOk = false;
@@ -2062,11 +2092,11 @@
   async function storageSet(key, val){
     if(!sheetConfigured()) return false;
     try{
-      var res = await fetch(CONFIG.SHEET_API_URL, {
+      var res = await fetchWithTimeout(CONFIG.SHEET_API_URL, {
         method:'POST',
         headers:{'Content-Type':'text/plain;charset=utf-8'}, // avoids CORS preflight, Apps Script can't handle OPTIONS
         body: JSON.stringify({ key:key, value: JSON.stringify(val) })
-      });
+      }, 12000);
       if(!res.ok) throw new Error('HTTP '+res.status);
       // Apps Script returns a JSON body on success; if it can't be parsed
       // (e.g. an HTML error/login page came back instead), treat it as a
@@ -2269,7 +2299,10 @@
   // before). It skips itself whenever the tab isn't visible, boot hasn't
   // finished (or failed and is waiting on a manual Retry), or a form/modal
   // is open — so it can never interrupt someone mid-edit.
-  var SYNC_POLL_MS = 20000;
+  // Was 20s. Each poll is 5 requests that now fail fast (8s timeout, see
+  // fetchWithTimeout) instead of hanging, so a much shorter interval is
+  // safe without the app ever feeling like it's piling up requests.
+  var SYNC_POLL_MS = 6000;
   var backgroundSyncInFlight = false;
   function formOrModalOpen(){
     return !!(state.itemForm || state.userForm || state.billEditForm || state.returnForm ||
@@ -2282,6 +2315,7 @@
     if(document.visibilityState==='hidden') return;
     if(formOrModalOpen()) return;
     backgroundSyncInFlight = true;
+    render(); // flips the topbar sync pill to "Syncing…" right away
     try{
       var settled = await Promise.allSettled([
         storageGet(STORE_KEY_ITEMS),
@@ -2298,21 +2332,38 @@
       var bills = settled[2].status==='fulfilled' ? settled[2].value : null;
       var shop = settled[3].status==='fulfilled' ? settled[3].value : null;
       var returns = settled[4].status==='fulfilled' ? settled[4].value : null;
+      var anyOk = settled.some(function(r){ return r.status==='fulfilled'; });
+      if(anyOk) state.lastSyncAt = Date.now();
       var changed = false;
       if(items){ state.items = items; state.items.forEach(ensureItemBatches); cacheSet('items', items); changed = true; }
       if(users){ state.users = users; cacheSet('users', users); changed = true; }
       if(bills){ state.bills = bills; cacheSet('bills', bills); changed = true; }
       if(shop){ state.shop = Object.assign({}, state.shop, shop); cacheSet('shop', state.shop); applyAppTitle(); applyTheme(); changed = true; }
       if(returns){ state.returns = returns; cacheSet('returns', returns); changed = true; }
-      if(changed) render();
+      if(changed || state.manualSyncActive) render();
     }catch(e){ /* silent — the next poll just tries again */ }
-    finally{ backgroundSyncInFlight = false; }
+    finally{ backgroundSyncInFlight = false; if(!formOrModalOpen()) render(); }
+  }
+  // Lets the person tap "Sync Now" in the topbar for an instant pull
+  // instead of waiting out the poll interval — same code path as the
+  // automatic poll, just triggered on demand with visible feedback.
+  async function manualSync(){
+    if(backgroundSyncInFlight) return;
+    state.manualSyncActive = true;
+    render();
+    await backgroundSync();
+    state.manualSyncActive = false;
+    render();
   }
   function startBackgroundSync(){
     setInterval(backgroundSync, SYNC_POLL_MS);
     document.addEventListener('visibilitychange', function(){
       if(document.visibilityState==='visible') backgroundSync();
     });
+    // Reconnecting to the network (wifi drop, mobile data blip, plane
+    // mode off) is exactly when another device's changes are most likely
+    // to be waiting — don't make the person wait for the next poll tick.
+    window.addEventListener('online', function(){ backgroundSync(); });
   }
 
   // The shop object carries a large built-in placeholder logo (~95KB of
@@ -2392,11 +2443,11 @@
   async function storageSyncTab(sheetName, headers, rows){
     if(!sheetConfigured()) return false;
     try{
-      var res = await fetch(CONFIG.SHEET_API_URL, {
+      var res = await fetchWithTimeout(CONFIG.SHEET_API_URL, {
         method:'POST',
         headers:{'Content-Type':'text/plain;charset=utf-8'}, // avoids CORS preflight
         body: JSON.stringify({ action:'syncTab', sheet:sheetName, headers:headers, rows:rows })
-      });
+      }, 12000);
       if(!res.ok) throw new Error('HTTP '+res.status);
       var text = await res.text();
       var data = JSON.parse(text);
@@ -2728,6 +2779,30 @@
   // something has gone wrong. Green dot + "Printer Connected" when
   // hooked up (tap opens Printer Settings); red dot + amber "Reconnect
   // Printer" when it isn't (tap tries to reattach).
+  function relativeTimeAgo(ts){
+    if(!ts) return '';
+    var diff = Math.round((Date.now()-ts)/1000);
+    if(diff<5) return 'just now';
+    if(diff<60) return diff+'s ago';
+    var m = Math.round(diff/60);
+    if(m<60) return m+'m ago';
+    var h = Math.round(m/60);
+    return h+'h ago';
+  }
+
+  // Small pill next to the shop name: shows live sync status ("Syncing…",
+  // "Synced 4s ago", or "Sync failed") and doubles as a manual "sync now"
+  // button so the person isn't stuck waiting on the poll interval.
+  function renderSyncStatusButton(){
+    if(!sheetConfigured()) return '';
+    var syncing = state.manualSyncActive || backgroundSyncInFlight;
+    var failed = state.storageOk===false && !syncing;
+    var label = syncing ? 'Syncing…' : (failed ? 'Sync failed — tap to retry' : (state.lastSyncAt ? 'Synced '+relativeTimeAgo(state.lastSyncAt) : 'Sync now'));
+    return '<button class="topbar-sync-btn'+(syncing?' syncing':'')+(failed?' err':'')+'" id="topbar-sync-now" title="Tap to sync now">'+
+      '<span class="sync-dot"></span><span>'+escapeHtml(label)+'</span>'+
+    '</button>';
+  }
+
   function renderTopbarPrinterButton(){
     if(!printingEnabled()) return '';
     if(!bluetoothSupported()) return '';
@@ -2797,6 +2872,7 @@
     return ''+
     '<div class="topbar">'+
       '<div class="brand2"><span>'+escapeHtml(state.shop.name)+'</span></div>'+
+      renderSyncStatusButton()+
       renderTopbarPrinterButton()+
     '</div>'+
     (state.bootLoadFailed ? renderBootFailBanner() : '')+
@@ -5494,6 +5570,9 @@
     if(state.showPaymentReceipt) bindPaymentReceiptModal();
     if(state.showMonthlyReport) bindMonthlyReportModal();
     if(state.printerModalOpen) bindPrinterSettingsModal();
+
+    var syncNowBtn = document.getElementById('topbar-sync-now');
+    if(syncNowBtn) syncNowBtn.addEventListener('click', function(){ manualSync(); });
 
     var topbarReconnect = document.getElementById('topbar-reconnect-printer');
     if(topbarReconnect) topbarReconnect.addEventListener('click', async function(){
