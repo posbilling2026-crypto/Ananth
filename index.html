@@ -426,6 +426,39 @@
     body *{visibility:hidden;}
     #print-area, #print-area *{visibility:visible;}
     #print-area{position:absolute;top:0;left:0;width:100%;}
+    @page{margin:12mm;}
+  }
+
+  /* ---------- MONTHLY REPORT / PROFESSIONAL STATEMENT ---------- */
+  .stmt-doc{background:#fff;color:#14213D;font-family:'Plus Jakarta Sans',sans-serif;padding:6px 2px;}
+  .stmt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;border-bottom:3px solid var(--ink);padding-bottom:12px;margin-bottom:16px;flex-wrap:wrap;}
+  .stmt-shopname{font-size:19px;font-weight:800;color:var(--ink);}
+  .stmt-shopline{font-size:12px;color:#5C7089;margin-top:2px;}
+  .stmt-title-block{text-align:right;}
+  .stmt-title{font-size:15px;font-weight:800;letter-spacing:.04em;color:var(--ink);}
+  .stmt-period{font-size:12.5px;color:#14213D;margin-top:4px;font-weight:600;}
+  .stmt-printed{font-size:10.5px;color:#5C7089;margin-top:2px;}
+  .stmt-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+  .stmt-sum-box{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--paper);}
+  .stmt-sum-box .k{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:#5C7089;font-weight:700;}
+  .stmt-sum-box .v{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:800;color:var(--ink);margin-top:3px;}
+  .stmt-section{margin-bottom:20px;}
+  .stmt-section-title{font-size:13px;font-weight:800;color:#fff;background:var(--ink);padding:6px 10px;border-radius:6px 6px 0 0;}
+  .stmt-table{width:100%;border-collapse:collapse;font-size:12px;}
+  .stmt-table td, .stmt-table th{padding:6px 10px;border-bottom:1px solid var(--line);}
+  .stmt-table th{text-align:left;background:var(--paper-dark);font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:#5C7089;}
+  .stmt-table td.num, .stmt-table th.num{text-align:right;font-family:'JetBrains Mono',monospace;}
+  .stmt-table .num{text-align:right;font-family:'JetBrains Mono',monospace;}
+  .stmt-total-row td{font-weight:800;border-top:2px solid var(--ink);border-bottom:none;}
+  .stmt-table-grid{border:1px solid var(--line);border-top:none;}
+  .stmt-grand-total{text-align:right;font-weight:800;font-size:13px;color:var(--ink);padding:8px 10px;border-top:2px solid var(--ink);}
+  .stmt-footer{margin-top:24px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:#5C7089;}
+  .stmt-sign-row{display:flex;justify-content:space-between;margin-top:36px;}
+  .stmt-sign-line{flex:1;max-width:220px;border-top:1px solid #5C7089;padding-top:6px;text-align:center;font-size:11px;}
+  @media print{
+    .stmt-doc{padding:0;}
+    .stmt-sum-box{break-inside:avoid;}
+    .stmt-section{break-inside:avoid;}
   }
 
   @media (max-width:860px){
@@ -512,6 +545,29 @@
   };
 
   var STORE_KEY_ITEMS='pos:items', STORE_KEY_USERS='pos:users', STORE_KEY_BILLS='pos:bills', STORE_KEY_SHOP='pos:shop', STORE_KEY_PRINTERS='pos:printers', STORE_KEY_RETURNS='pos:returns';
+
+  // ---------------- LOCAL CACHE (fast load + background sync) ----------------
+  // A plain localStorage mirror of the same data kept in the Google Sheet.
+  // Purpose: paint instantly from the last-known-good copy on this device
+  // instead of making every launch wait on the Sheet (often 1-3s per
+  // request, more on mobile). The Sheet stays the one source of truth —
+  // boot() still always re-fetches from it right after and overwrites this
+  // cache with whatever comes back, and a background sync (further down)
+  // keeps refreshing it so changes made on other devices show up here too.
+  // If localStorage is unavailable (private browsing, quota full, etc.)
+  // every call below just silently no-ops and the app falls back to
+  // talking to the Sheet directly, exactly as it did before this existed.
+  var CACHE_PREFIX = 'pos:cache:';
+  function cacheGet(name){
+    try{
+      var raw = localStorage.getItem(CACHE_PREFIX+name);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+  function cacheSet(name, val){
+    try{ localStorage.setItem(CACHE_PREFIX+name, JSON.stringify(val)); }catch(e){}
+  }
+
   var THEME_PRESETS = ['#DC2626','#16A34A','#7C3AED','#2563EB','#0D9488','#EA580C','#DB2777','#7A1315'];
   function sameColor(a,b){ return (a||'').toLowerCase()===(b||'').toLowerCase(); }
 
@@ -570,6 +626,10 @@
     reportPayment:'all',
     reportSelectedDate: todayISO(),
     expandedDay:null,
+    mrMonth: monthKey(new Date().toISOString()),
+    mrFrom:'',
+    mrTo:'',
+    showMonthlyReport:false,
     adminTab:'items',
     itemForm:null,
     userForm:null,
@@ -840,7 +900,7 @@
       state.printerHistory.push({ name:name, firstConnected:nowISO, lastConnected:nowISO, timesConnected:1 });
     }
     storageSet(STORE_KEY_PRINTERS, state.printerHistory).then(function(ok){
-      if(ok) syncReadableSheets();
+      if(ok){ cacheSet('printers', state.printerHistory); syncReadableSheets(); }
     });
   }
 
@@ -2065,6 +2125,30 @@
   }
 
   async function boot(){
+    // Fast path: paint instantly from the local cache if this device has
+    // one from a previous successful load, instead of leaving the person
+    // stuck on the loading screen for however long the Sheet takes to
+    // answer. This is only ever a head start — the real fetch right below
+    // still runs every time regardless, and overwrites state (and the
+    // cache) with whatever the Sheet actually has the moment it answers.
+    var cachedItems = cacheGet('items');
+    var cachedUsers = cacheGet('users');
+    if(cachedItems && cachedUsers){
+      state.items = cachedItems;
+      state.users = cachedUsers;
+      var cachedBills = cacheGet('bills');
+      if(cachedBills) state.bills = cachedBills;
+      var cachedShop = cacheGet('shop');
+      if(cachedShop) state.shop = Object.assign({}, state.shop, cachedShop);
+      var cachedPrinters = cacheGet('printers');
+      if(cachedPrinters) state.printerHistory = cachedPrinters;
+      var cachedReturns = cacheGet('returns');
+      if(cachedReturns) state.returns = cachedReturns;
+      state.items.forEach(ensureItemBatches);
+      applyAppTitle();
+      applyTheme();
+      state.booted = true;
+    }
     // Paint the Admin/Cashier picker right away — it doesn't need any
     // fetched data to display, so there's no reason to make the person
     // stare at a blank screen while these requests are still in flight.
@@ -2129,6 +2213,17 @@
     if(printersR.status==='fulfilled') state.printerHistory = printers || [];
     // Backfill batches for items saved before purchase-price tracking existed.
     state.items.forEach(ensureItemBatches);
+    if(!anyFailed){
+      // Everything came back from the Sheet successfully — refresh the
+      // local cache with it so the next launch's fast path (above) starts
+      // from this instead of whatever (possibly older) copy was there.
+      cacheSet('items', state.items);
+      cacheSet('users', state.users);
+      cacheSet('bills', state.bills);
+      cacheSet('shop', state.shop);
+      cacheSet('printers', state.printerHistory);
+      cacheSet('returns', state.returns);
+    }
     try{
       var lastPrinter = localStorage.getItem(PRINTER_STORE_KEY);
       if(lastPrinter) state.printer.status = 'Last used: '+lastPrinter+'. Reconnecting…';
@@ -2147,6 +2242,60 @@
         }catch(e){}
         render();
       }
+    });
+  }
+
+  // ---------------- BACKGROUND SYNC (real-time-ish, multi-device) ----------------
+  // Google Sheets has no push/websocket channel to tell this app when
+  // another device changed something, so this quietly re-checks it every
+  // so often instead — pure read, never writes (persist() below is still
+  // what pushes this device's own changes out, immediately, exactly as
+  // before). It skips itself whenever the tab isn't visible, boot hasn't
+  // finished (or failed and is waiting on a manual Retry), or a form/modal
+  // is open — so it can never interrupt someone mid-edit.
+  var SYNC_POLL_MS = 20000;
+  var backgroundSyncInFlight = false;
+  function formOrModalOpen(){
+    return !!(state.itemForm || state.userForm || state.billEditForm || state.returnForm ||
+      state.stockReturnForm || state.restockForm || state.payFormOpenId || state.printerModalOpen ||
+      state.showReceipt || state.showPaymentReceipt || state.showMonthlyReport || state.busyMsg);
+  }
+  async function backgroundSync(){
+    if(backgroundSyncInFlight) return;
+    if(!state.booted || state.bootLoadFailed || !sheetConfigured()) return;
+    if(document.visibilityState==='hidden') return;
+    if(formOrModalOpen()) return;
+    backgroundSyncInFlight = true;
+    try{
+      var settled = await Promise.allSettled([
+        storageGet(STORE_KEY_ITEMS),
+        storageGet(STORE_KEY_USERS),
+        storageGet(STORE_KEY_BILLS),
+        storageGet(STORE_KEY_SHOP),
+        storageGet(STORE_KEY_RETURNS)
+      ]);
+      // Re-check — a form/modal can easily have opened during the round
+      // trip above (each of these calls can take a second or two).
+      if(formOrModalOpen()) return;
+      var items = settled[0].status==='fulfilled' ? settled[0].value : null;
+      var users = settled[1].status==='fulfilled' ? settled[1].value : null;
+      var bills = settled[2].status==='fulfilled' ? settled[2].value : null;
+      var shop = settled[3].status==='fulfilled' ? settled[3].value : null;
+      var returns = settled[4].status==='fulfilled' ? settled[4].value : null;
+      var changed = false;
+      if(items){ state.items = items; state.items.forEach(ensureItemBatches); cacheSet('items', items); changed = true; }
+      if(users){ state.users = users; cacheSet('users', users); changed = true; }
+      if(bills){ state.bills = bills; cacheSet('bills', bills); changed = true; }
+      if(shop){ state.shop = Object.assign({}, state.shop, shop); cacheSet('shop', state.shop); applyAppTitle(); applyTheme(); changed = true; }
+      if(returns){ state.returns = returns; cacheSet('returns', returns); changed = true; }
+      if(changed) render();
+    }catch(e){ /* silent — the next poll just tries again */ }
+    finally{ backgroundSyncInFlight = false; }
+  }
+  function startBackgroundSync(){
+    setInterval(backgroundSync, SYNC_POLL_MS);
+    document.addEventListener('visibilitychange', function(){
+      if(document.visibilityState==='visible') backgroundSync();
     });
   }
 
@@ -2170,6 +2319,16 @@
     if(key==='bills') ok = await storageSet(STORE_KEY_BILLS, state.bills);
     if(key==='shop') ok = await storageSet(STORE_KEY_SHOP, shopForStorage(state.shop));
     if(key==='returns') ok = await storageSet(STORE_KEY_RETURNS, state.returns);
+    if(ok){
+      // Keep the local cache in lockstep with whatever just got confirmed
+      // saved to the Sheet, so the next launch's fast path (see boot())
+      // starts from this instead of the previous, now-stale copy.
+      if(key==='items') cacheSet('items', state.items);
+      if(key==='users') cacheSet('users', state.users);
+      if(key==='bills') cacheSet('bills', state.bills);
+      if(key==='shop') cacheSet('shop', state.shop);
+      if(key==='returns') cacheSet('returns', state.returns);
+    }
     // Fire-and-forget: also mirror the data into separate, human-readable
     // tabs in the same Google Sheet (Bills, Shop Details, Customers,
     // Customer Statement, Stock, Stock In-Out, Accounts, Cheque Details,
@@ -2632,6 +2791,7 @@
     '<div class="bottom-tabs">'+bottomNavHtml+'</div>'+
     (state.showReceipt ? renderReceiptModal() : '')+
     (state.showPaymentReceipt ? renderPaymentReceiptModal() : '')+
+    (state.showMonthlyReport ? renderMonthlyReportModal() : '')+
     (state.printerModalOpen ? renderPrinterSettingsModal() : '');
   }
 
@@ -4166,6 +4326,95 @@
     '</div>';
   }
 
+  // ---------------- MONTHLY / PERIOD STATEMENT (PDF) ----------------
+  // Shared data-gathering for the professional Monthly Report statement —
+  // works for either a whole calendar month or a custom from/to range, so
+  // the "This month" quick pick and the "date to date" custom search
+  // produce the exact same shape of report and never drift apart.
+  function periodReportData(from, to, label){
+    var bills = state.bills.filter(function(b){
+      var day = localDay(b.dateISO);
+      if(from && day<from) return false;
+      if(to && day>to) return false;
+      return true;
+    });
+    var cashBillAmt=0, chequeAmt=0, creditSalesTotal=0, creditBalanceTotal=0;
+    bills.forEach(function(b){
+      if(b.payment==='cash') cashBillAmt += (b.total||0);
+      else if(b.payment==='cheque') chequeAmt += (b.total||0);
+      else if(b.payment==='account'){ creditSalesTotal += (b.total||0); creditBalanceTotal += billBalance(b); }
+    });
+    // Payments received in this period against account bills (any bill,
+    // not just ones raised in-period) count toward cash collected.
+    var acctPaidNow=0, acctReceivePayment=0;
+    state.bills.forEach(function(b){
+      if(b.payment!=='account') return;
+      (b.payments||[]).forEach(function(p){
+        var day = localDay(p.dateISO);
+        if(from && day<from) return;
+        if(to && day>to) return;
+        if(p.note==='Payment at time of sale') acctPaidNow += (p.amount||0);
+        else acctReceivePayment += (p.amount||0);
+      });
+    });
+    var cashSalesTotal = cashBillAmt + acctPaidNow + acctReceivePayment;
+
+    var byDay = groupBillsByDay(bills);
+
+    // Customer balance-due details, scoped to account bills raised in this period.
+    var custMap = {};
+    bills.forEach(function(b){
+      if(b.payment!=='account') return;
+      var key = (b.customerName||'(no name given)').toLowerCase()+'|'+(b.customerPhone||'');
+      if(!custMap[key]) custMap[key] = {name:b.customerName||'(no name given)', phone:b.customerPhone||'', bills:0, sales:0, received:0, balance:0};
+      var c = custMap[key];
+      c.bills += 1;
+      c.sales += (b.total||0);
+      c.received += billPaidTotal(b);
+      c.balance += billBalance(b);
+    });
+    var customerRows = Object.keys(custMap).map(function(k){ return custMap[k]; }).sort(function(a,b){ return b.balance-a.balance; });
+    var customerBalanceTotal = customerRows.reduce(function(s,c){ return s+c.balance; },0);
+
+    return {
+      from: from, to: to, label: label,
+      bills: bills,
+      cashBillAmt: cashBillAmt, acctPaidNow: acctPaidNow, acctReceivePayment: acctReceivePayment, cashSalesTotal: cashSalesTotal,
+      chequeSalesTotal: chequeAmt,
+      creditSalesTotal: creditSalesTotal, creditBalanceTotal: creditBalanceTotal,
+      byDay: byDay,
+      customerRows: customerRows, customerBalanceTotal: customerBalanceTotal,
+      totalBills: bills.length,
+      totalItems: bills.reduce(function(s,b){ return s+billItemCount(b); },0),
+      grandTotal: bills.reduce(function(s,b){ return s+(b.total||0); },0)
+    };
+  }
+
+  function monthlyReportData(monthStr){
+    monthStr = monthStr || monthKey(new Date().toISOString());
+    var d = new Date(monthStr+'-01T00:00:00');
+    var first = monthStr+'-01';
+    var lastDate = new Date(d.getFullYear(), d.getMonth()+1, 0);
+    var last = lastDate.getFullYear()+'-'+String(lastDate.getMonth()+1).padStart(2,'0')+'-'+String(lastDate.getDate()).padStart(2,'0');
+    var label = d.toLocaleDateString(undefined,{year:'numeric', month:'long'});
+    return periodReportData(first, last, label);
+  }
+
+  // Builds the report from whichever of the two selectors on the Reports
+  // page currently has a value: an explicit custom range wins over the
+  // month picker (so setting a From/To always takes priority), otherwise
+  // falls back to the selected calendar month.
+  function currentMonthlyReportData(){
+    if(state.mrFrom || state.mrTo){
+      var rangeLabel = (state.mrFrom||'…')+' \u2192 '+(state.mrTo||'…');
+      return monthlyReportDataFromRange(state.mrFrom, state.mrTo, rangeLabel);
+    }
+    return monthlyReportData(state.mrMonth);
+  }
+  function monthlyReportDataFromRange(from, to, label){
+    return periodReportData(from, to, label);
+  }
+
   function renderReports(){
     var selDate = state.reportSelectedDate || todayISO();
     var selSummary = selectedDateSummary(selDate);
@@ -4298,6 +4547,17 @@
       (state.printer.status ? '<div class="printer-status" style="margin-top:10px;"><span class="dot '+(state.printer.connected?'ok':'off')+'"></span><span>'+escapeHtml(state.printer.status)+'</span></div>' : '')+
     '</div>'+
 
+    '<div class="card highlight-amber" style="margin-bottom:18px;">'+
+      '<div class="section-head"><h3>&#128196; Monthly Report &mdash; Statement (PDF)</h3></div>'+
+      '<div class="note-box">Pick a month, or a custom date-to-date range, then generate a professional statement PDF with total cash, cheque and credit sales, sales details, and customers\' balance due for that period.</div>'+
+      '<div class="date-select-bar">'+
+        '<div class="field"><label>Select month</label><input type="month" id="mr-month" value="'+escapeHtml(state.mrMonth)+'"></div>'+
+        '<div class="field"><label>Or from</label><input type="date" id="mr-from" value="'+escapeHtml(state.mrFrom)+'"></div>'+
+        '<div class="field"><label>to</label><input type="date" id="mr-to" value="'+escapeHtml(state.mrTo)+'"></div>'+
+        '<button class="btn btn-primary btn-sm" id="mr-generate" type="button">&#128196; Generate PDF Statement</button>'+
+      '</div>'+
+    '</div>'+
+
     '<div class="banner-grid">'+
       '<div class="banner-card banner-cash"><span class="b-icon">&#128181;</span>'+
         '<div class="b-label">Cash Sales &middot; '+selDateLabel+'</div>'+
@@ -4398,11 +4658,129 @@
       render();
     }
     if(repSearch) repSearch.addEventListener('click', applySearch);
+
+    var mrMonth = document.getElementById('mr-month');
+    if(mrMonth) mrMonth.addEventListener('change', function(e){ state.mrMonth = e.target.value || monthKey(new Date().toISOString()); });
+    var mrFrom = document.getElementById('mr-from');
+    if(mrFrom) mrFrom.addEventListener('change', function(e){ state.mrFrom = e.target.value; });
+    var mrTo = document.getElementById('mr-to');
+    if(mrTo) mrTo.addEventListener('change', function(e){ state.mrTo = e.target.value; });
+    var mrGenerate = document.getElementById('mr-generate');
+    if(mrGenerate) mrGenerate.addEventListener('click', function(){
+      state.showMonthlyReport = true;
+      render();
+    });
+
     document.querySelectorAll('[data-preset]').forEach(function(btn){
       btn.addEventListener('click', function(){
         setReportPreset(btn.getAttribute('data-preset'));
         state.expandedDay = null;
         render();
+      });
+    });
+  }
+
+  // Professional printable statement for the Monthly Report modal — a
+  // full-page letterhead-style document (not the narrow thermal
+  // receipt-wrap used elsewhere), meant to be saved/shared as a PDF via
+  // the browser's own Print dialog (Print > Save as PDF, or the Share
+  // icon inside the print preview on mobile).
+  function renderMonthlyReportModal(){
+    var d = currentMonthlyReportData();
+    var printedAt = new Date().toLocaleString();
+
+    var dayRows = d.byDay.length ? d.byDay.map(function(r){
+      return '<tr><td>'+new Date(r.date+'T00:00:00').toLocaleDateString()+'</td><td class="num">'+r.bills.length+'</td><td class="num">'+money(r.cash)+'</td><td class="num">'+money(r.cheque)+'</td><td class="num">'+money(r.credit)+'</td><td class="num">'+money(r.total)+'</td></tr>';
+    }).join('') : '<tr><td colspan="6" style="text-align:center;color:#777;">No sales in this period.</td></tr>';
+
+    var custRows = d.customerRows.length ? d.customerRows.map(function(c){
+      return '<tr><td>'+escapeHtml(c.name)+'</td><td>'+escapeHtml(c.phone)+'</td><td class="num">'+c.bills+'</td><td class="num">'+money(c.sales)+'</td><td class="num">'+money(c.received)+'</td><td class="num" style="font-weight:700;">'+money(c.balance)+'</td></tr>';
+    }).join('') : '<tr><td colspan="6" style="text-align:center;color:#777;">No account (credit) customers in this period.</td></tr>';
+
+    return ''+
+    '<div class="modal-bg" id="mr-bg"><div class="modal-box" style="max-width:760px;position:relative;">'+
+      '<button class="close-x" id="mr-close">\u2715</button>'+
+      '<div id="print-area"><div class="stmt-doc">'+
+        '<div class="stmt-head">'+
+          '<div class="stmt-shop">'+
+            '<div class="stmt-shopname">'+escapeHtml(state.shop.name)+'</div>'+
+            (state.shop.address ? '<div class="stmt-shopline">'+escapeHtml(state.shop.address)+'</div>' : '')+
+            (state.shop.phone ? '<div class="stmt-shopline">'+escapeHtml(state.shop.phone)+'</div>' : '')+
+          '</div>'+
+          '<div class="stmt-title-block">'+
+            '<div class="stmt-title">MONTHLY SALES STATEMENT</div>'+
+            '<div class="stmt-period">Period: '+escapeHtml(d.label)+'</div>'+
+            '<div class="stmt-printed">Printed: '+escapeHtml(printedAt)+'</div>'+
+          '</div>'+
+        '</div>'+
+
+        '<div class="stmt-summary-grid">'+
+          '<div class="stmt-sum-box"><div class="k">Total Cash Sales</div><div class="v">'+money(d.cashSalesTotal)+'</div></div>'+
+          '<div class="stmt-sum-box"><div class="k">Total Cheque Sales</div><div class="v">'+money(d.chequeSalesTotal)+'</div></div>'+
+          '<div class="stmt-sum-box"><div class="k">Total Credit Sales</div><div class="v">'+money(d.creditSalesTotal)+'</div></div>'+
+          '<div class="stmt-sum-box"><div class="k">Grand Total Sales</div><div class="v">'+money(d.grandTotal)+'</div></div>'+
+        '</div>'+
+
+        '<div class="stmt-section"><div class="stmt-section-title">Cash Sales &mdash; Details</div>'+
+          '<table class="stmt-table"><tbody>'+
+            '<tr><td>Cash bills</td><td class="num">'+money(d.cashBillAmt)+'</td></tr>'+
+            '<tr><td>Received now (on account bills)</td><td class="num">'+money(d.acctPaidNow)+'</td></tr>'+
+            '<tr><td>Received later (old balance payments)</td><td class="num">'+money(d.acctReceivePayment)+'</td></tr>'+
+            '<tr class="stmt-total-row"><td>Total Cash Sales</td><td class="num">'+money(d.cashSalesTotal)+'</td></tr>'+
+          '</tbody></table>'+
+        '</div>'+
+
+        '<div class="stmt-section"><div class="stmt-section-title">Cheque Sales &mdash; Details</div>'+
+          '<table class="stmt-table"><tbody>'+
+            '<tr><td>Cheque bills, '+escapeHtml(d.label)+'</td><td class="num">'+money(d.chequeSalesTotal)+'</td></tr>'+
+            '<tr class="stmt-total-row"><td>Total Cheque Sales</td><td class="num">'+money(d.chequeSalesTotal)+'</td></tr>'+
+          '</tbody></table>'+
+        '</div>'+
+
+        '<div class="stmt-section"><div class="stmt-section-title">Credit Sales &mdash; Details</div>'+
+          '<table class="stmt-table"><tbody>'+
+            '<tr><td>Account bills raised this period (sale value)</td><td class="num">'+money(d.creditSalesTotal)+'</td></tr>'+
+            '<tr class="stmt-total-row"><td>Balance still due, bills raised this period</td><td class="num">'+money(d.creditBalanceTotal)+'</td></tr>'+
+          '</tbody></table>'+
+        '</div>'+
+
+        '<div class="stmt-section"><div class="stmt-section-title">Sales Details &mdash; Day by Day</div>'+
+          '<table class="stmt-table stmt-table-grid"><thead><tr><th>Date</th><th>Bills</th><th>Cash</th><th>Cheque</th><th>Credit</th><th>Total</th></tr></thead><tbody>'+
+            dayRows+
+          '</tbody></table>'+
+        '</div>'+
+
+        '<div class="stmt-section"><div class="stmt-section-title">Customers &mdash; Balance Due ('+escapeHtml(d.label)+')</div>'+
+          '<table class="stmt-table stmt-table-grid"><thead><tr><th>Customer</th><th>Phone</th><th>Bills</th><th>Sales</th><th>Received</th><th>Balance Due</th></tr></thead><tbody>'+
+            custRows+
+          '</tbody></table>'+
+          '<div class="stmt-grand-total">Total Balance Due: '+money(d.customerBalanceTotal)+'</div>'+
+        '</div>'+
+
+        '<div class="stmt-footer">'+
+          (state.shop.footer ? '<div>'+escapeHtml(state.shop.footer)+'</div>' : '')+
+          '<div class="stmt-sign-row"><div class="stmt-sign-line">Prepared By</div><div class="stmt-sign-line">Authorized Signature</div></div>'+
+        '</div>'+
+      '</div></div>'+
+
+      '<div class="note-box" style="margin-top:12px;">Tap "Print / Save as PDF", then choose <b>Save as PDF</b> as the destination (or, on mobile, use the <b>Share</b> icon inside the print preview to send the PDF directly over WhatsApp, email, etc).</div>'+
+      '<div class="modal-actions">'+
+        '<button class="btn btn-primary btn-block" id="mr-print">&#128424; Print / Save as PDF</button>'+
+      '</div>'+
+      '<button class="btn btn-ghost btn-block" id="mr-done" style="margin-top:8px;">Done</button>'+
+    '</div></div>';
+  }
+
+  function bindMonthlyReportModal(){
+    var closeBtn = document.getElementById('mr-close');
+    var doneBtn = document.getElementById('mr-done');
+    var printBtn = document.getElementById('mr-print');
+    function closeIt(){ state.showMonthlyReport = false; render(); }
+    if(closeBtn) closeBtn.addEventListener('click', closeIt);
+    if(doneBtn) doneBtn.addEventListener('click', closeIt);
+    if(printBtn) printBtn.addEventListener('click', function(){
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){ window.print(); });
       });
     });
   }
@@ -4996,6 +5374,7 @@
     if(state.view==='accounts' || state.view==='stock' || state.view==='reports' || state.view==='customers') bindPageActions();
     if(state.showReceipt) bindReceiptModal();
     if(state.showPaymentReceipt) bindPaymentReceiptModal();
+    if(state.showMonthlyReport) bindMonthlyReportModal();
     if(state.printerModalOpen) bindPrinterSettingsModal();
 
     var topbarReconnect = document.getElementById('topbar-reconnect-printer');
@@ -5028,6 +5407,7 @@
   }
 
   boot();
+  startBackgroundSync();
 })();
 </script>
 </body>
