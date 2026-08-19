@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>BILL APP</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#7A1315">
+<meta name="theme-color" content="#8E1616">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -18,23 +18,24 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root{
-    --ink:#7A1315;
-    --ink-light:#9E1B23;
-    --green:#DC2626;
-    --green-light:#F87171;
-    --paper:#F3F8FF;
-    --paper-dark:#E4EDFB;
+    --ink:#8E1616;
+    --ink-light:#A61E1E;
+    --green:#B71C1C;
+    --green-light:#C62828;
+    --paper:#FFFFFF;
+    --paper-dark:#F5F5F5;
     --amber:#F5A623;
-    --red:#DC3D3D;
-    --text:#14213D;
-    --text-dim:#5C7089;
-    --line:#D9E4F5;
+    --red:#7F0F0F;
+    --text:#222222;
+    --text-dim:#757575;
+    --line:#E0E0E0;
     --white:#FFFFFF;
-    --shadow-sm:0 1px 2px rgba(15,61,117,.06), 0 1px 3px rgba(15,61,117,.08);
-    --shadow-md:0 4px 12px rgba(15,61,117,.10), 0 2px 4px rgba(15,61,117,.06);
-    --shadow-lg:0 12px 32px rgba(15,61,117,.16), 0 4px 10px rgba(15,61,117,.08);
+    --shadow-sm:0 1px 2px rgba(0,0,0,.06), 0 1px 3px rgba(0,0,0,.08);
+    --shadow-md:0 4px 12px rgba(0,0,0,.10), 0 2px 4px rgba(0,0,0,.06);
+    --shadow-lg:0 12px 32px rgba(0,0,0,.16), 0 4px 10px rgba(0,0,0,.08);
     --radius-sm:8px;
     --radius-md:12px;
     --radius-lg:18px;
@@ -68,7 +69,7 @@
   .login-wrap{
     flex:1;display:flex;align-items:center;justify-content:center;
     background:
-      radial-gradient(circle at 15% 8%, rgba(220,38,38,.10), transparent 45%),
+      radial-gradient(circle at 15% 8%, rgba(183,28,28,.10), transparent 45%),
       radial-gradient(circle at 88% 92%, rgba(245,166,35,.10), transparent 40%),
       repeating-linear-gradient(135deg, rgba(20,33,61,0.03) 0 2px, transparent 2px 14px),
       var(--paper);
@@ -109,7 +110,7 @@
     font-size:16px;background:var(--white);color:var(--text);
     transition:border-color .15s ease, box-shadow .15s ease;
   }
-  .field input:focus,.field select:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(220,38,38,.14);}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(183,28,28,.14);}
   .suggest-drop{
     position:absolute;top:100%;left:0;right:0;margin-top:4px;
     background:var(--white);border:1.5px solid var(--line);border-radius:var(--radius-sm);
@@ -157,7 +158,7 @@
     min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;
     gap:20px;text-align:center;padding:24px;
     background:
-      radial-gradient(circle at 15% 8%, rgba(220,38,38,.10), transparent 45%),
+      radial-gradient(circle at 15% 8%, rgba(183,28,28,.10), transparent 45%),
       radial-gradient(circle at 88% 92%, rgba(245,166,35,.10), transparent 40%),
       var(--paper);
   }
@@ -188,7 +189,7 @@
 
   .layout{display:flex;flex:1;min-height:0;}
   .sidebar{
-    width:190px;flex-shrink:0;background:linear-gradient(180deg,var(--ink-light),#5C0D0F);color:var(--white);
+    width:190px;flex-shrink:0;background:linear-gradient(180deg,var(--ink-light),#163f70);color:var(--white);
     padding:16px 10px;display:flex;flex-direction:column;gap:3px;
     box-shadow:2px 0 10px rgba(15,61,117,.10);
   }
@@ -209,16 +210,16 @@
 
   .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-md);padding:16px;box-shadow:var(--shadow-sm);overflow-x:auto;}
   .grid2{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;align-items:start;}
-  .card.cash-highlight{border:1.5px solid var(--green);background:linear-gradient(180deg,rgba(220,38,38,.06),rgba(220,38,38,0) 40%);box-shadow:0 2px 10px rgba(220,38,38,.12);}
+  .card.cash-highlight{border:1.5px solid var(--green);background:linear-gradient(180deg,rgba(183,28,28,.06),rgba(183,28,28,0) 40%);box-shadow:0 2px 10px rgba(183,28,28,.12);}
   .card.cash-highlight .section-head h3{font-size:18px;font-weight:800;color:var(--green);}
-  .card.cash-highlight table thead th{background:rgba(220,38,38,.08);}
+  .card.cash-highlight table thead th{background:rgba(183,28,28,.08);}
   .card.cash-highlight table td:last-child{font-size:15px;}
   .card.highlight-amber{border:1.5px solid var(--amber);background:linear-gradient(180deg,rgba(245,166,35,.09),rgba(245,166,35,0) 40%);box-shadow:0 2px 10px rgba(245,166,35,.14);}
   .card.highlight-amber .section-head h3{font-size:17px;font-weight:800;color:#B4720C;}
   .card.highlight-amber table thead th{background:rgba(245,166,35,.12);}
-  .card.highlight-ink{border:1.5px solid var(--ink-light);background:linear-gradient(180deg,rgba(158,27,35,.07),rgba(158,27,35,0) 40%);box-shadow:0 2px 10px rgba(158,27,35,.12);}
+  .card.highlight-ink{border:1.5px solid var(--ink-light);background:linear-gradient(180deg,rgba(27,78,143,.07),rgba(27,78,143,0) 40%);box-shadow:0 2px 10px rgba(27,78,143,.12);}
   .card.highlight-ink .section-head h3{font-size:17px;font-weight:800;color:var(--ink-light);}
-  .card.highlight-ink table thead th{background:rgba(158,27,35,.08);}
+  .card.highlight-ink table thead th{background:rgba(27,78,143,.08);}
   .card.highlight-red{border:1.5px solid var(--red);background:linear-gradient(180deg,rgba(220,61,61,.07),rgba(220,61,61,0) 40%);box-shadow:0 2px 10px rgba(220,61,61,.12);}
   .card.highlight-red .section-head h3{font-size:17px;font-weight:800;color:var(--red);}
   .card.highlight-red table thead th{background:rgba(220,61,61,.08);}
@@ -226,7 +227,7 @@
   /* ---------- BILLING: items ---------- */
   .search-row{display:flex;gap:8px;margin-bottom:14px;}
   .search-row input{flex:1;padding:10px 12px;border:1.5px solid var(--line);border-radius:var(--radius-sm);font-size:14px;transition:border-color .15s ease, box-shadow .15s ease;}
-  .search-row input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(220,38,38,.14);}
+  .search-row input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(183,28,28,.14);}
   .item-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
   .item-tile{
     border:1.5px solid var(--line);border-radius:var(--radius-md);padding:12px 12px 10px;background:var(--white);
@@ -280,7 +281,7 @@
   }
   .qty-ctrl input.qty-input::-webkit-outer-spin-button,
   .qty-ctrl input.qty-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-  .qty-ctrl input.qty-input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(220,38,38,.14);}
+  .qty-ctrl input.qty-input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(183,28,28,.14);}
   .line-total{width:64px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;}
   .rm-btn{color:var(--red);background:none;border:none;font-size:18px;padding:4px 6px;min-height:32px;min-width:32px;border-radius:7px;transition:background .15s ease;}
   .rm-btn:hover{background:rgba(220,61,61,.1);}
@@ -309,15 +310,13 @@
   tbody tr:hover{background:var(--paper);}
   .num{font-family:'JetBrains Mono',monospace;}
   .pill{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:9px;text-transform:uppercase;}
-  .pill.cash{background:#DFF0E6;color:var(--green);}
+  .pill.cash{background:#F6DADA;color:var(--green);}
   .pill.cheque{background:#FDF0DA;color:#8A5E12;}
   .pill.account{background:#FBE3E1;color:var(--red);}
-  .pill.paid{background:#DCEBFF;color:var(--green);}
+  .pill.paid{background:#F6DADA;color:var(--green);}
   .pill.partial{background:#FDF0DA;color:#8A5E12;}
   .pill.unpaid{background:#FBE3E1;color:var(--red);}
   .acct-row-actions{display:flex;gap:6px;flex-wrap:wrap;}
-  .inline-pay{display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap;}
-  .inline-pay input{width:110px;padding:8px;border:1.5px solid var(--line);border-radius:5px;font-size:14px;}
   .edit-line{display:flex;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);}
   .edit-line input{padding:6px 8px;border:1.5px solid var(--line);border-radius:4px;font-size:13px;}
   .edit-line .en{flex:1;}
@@ -404,7 +403,7 @@
   .topbar-printer-btn:hover{background:rgba(255,255,255,.16);}
   .topbar-printer-btn.disconnected{background:var(--amber);color:var(--ink);border-color:var(--amber);}
   .topbar-printer-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-  .topbar-printer-btn .dot.ok{background:var(--green);box-shadow:0 0 0 3px rgba(220,38,38,.25);}
+  .topbar-printer-btn .dot.ok{background:var(--green);box-shadow:0 0 0 3px rgba(183,28,28,.25);}
   .topbar-printer-btn .dot.off{background:var(--red);}
   .printer-msg{font-size:11.5px;color:var(--text-dim);margin-top:4px;background:var(--paper);border-radius:var(--radius-sm);padding:8px 10px;}
   .page-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
@@ -426,53 +425,6 @@
     body *{visibility:hidden;}
     #print-area, #print-area *{visibility:visible;}
     #print-area{position:absolute;top:0;left:0;width:100%;}
-    @page{size:A4;margin:12mm;}
-  }
-
-  /* ---------- MONTHLY REPORT / PROFESSIONAL STATEMENT ---------- */
-  .stmt-doc{background:#fff;color:#14213D;font-family:'Plus Jakarta Sans',sans-serif;padding:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;}
-  .stmt-head{
-    position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;
-    background:linear-gradient(135deg,var(--ink) 0%,var(--ink-light) 100%);
-    color:#fff;padding:24px 28px;
-  }
-  .stmt-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:linear-gradient(90deg,var(--amber),var(--green));}
-  .stmt-brand-row{display:flex;align-items:center;gap:11px;}
-  .stmt-mark{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:16px;color:#fff;flex-shrink:0;}
-  .stmt-shopname{font-size:19px;font-weight:800;color:#fff;letter-spacing:-.01em;}
-  .stmt-shopline{font-size:11.5px;color:rgba(255,255,255,.75);margin-top:2px;}
-  .stmt-shop-lines{margin-top:6px;margin-left:47px;}
-  .stmt-title-block{text-align:right;}
-  .stmt-title{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:.09em;color:#fff;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);padding:5px 12px;border-radius:20px;}
-  .stmt-period{font-size:12.5px;color:#fff;margin-top:9px;font-weight:700;}
-  .stmt-printed{font-size:10px;color:rgba(255,255,255,.72);margin-top:3px;}
-  .stmt-body{padding:24px 28px 6px;}
-  .stmt-summary-grid{display:flex;gap:10px;margin-bottom:22px;}
-  .stmt-sum-box{flex:1 1 0;min-width:0;border:1px solid var(--line);border-left:4px solid var(--ink);border-radius:9px;padding:11px 12px;background:var(--paper);}
-  .stmt-sum-box.cash{border-left-color:#1E9E5A;}
-  .stmt-sum-box.cheque{border-left-color:var(--amber);}
-  .stmt-sum-box.credit{border-left-color:var(--red);}
-  .stmt-sum-box.grand{border-left-color:var(--ink);background:#fff;box-shadow:var(--shadow-sm);}
-  .stmt-sum-box .k{font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:#5C7089;font-weight:700;}
-  .stmt-sum-box .v{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:800;color:var(--ink);margin-top:4px;}
-  .stmt-section{margin-bottom:20px;}
-  .stmt-section-title{font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);padding-bottom:6px;margin-bottom:0;border-bottom:2px solid var(--ink);}
-  .stmt-table{width:100%;border-collapse:collapse;font-size:11.5px;}
-  .stmt-table td, .stmt-table th{padding:7px 10px;border-bottom:1px solid var(--line);}
-  .stmt-table th{text-align:left;background:var(--paper-dark);font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;color:#5C7089;font-weight:700;}
-  .stmt-table td.num, .stmt-table th.num{text-align:right;font-family:'JetBrains Mono',monospace;}
-  .stmt-table .num{text-align:right;font-family:'JetBrains Mono',monospace;}
-  .stmt-table tbody tr:nth-child(even) td{background:#FAFBFE;}
-  .stmt-total-row td{font-weight:800;border-top:2px solid var(--ink);border-bottom:none;background:var(--paper)!important;}
-  .stmt-table-grid{border:1px solid var(--line);border-top:none;border-radius:0 0 9px 9px;overflow:hidden;}
-  .stmt-grand-total{text-align:right;font-weight:800;font-size:13px;color:var(--ink);padding:9px 12px;border:1px solid var(--line);border-top:2px solid var(--ink);background:var(--paper);border-radius:0 0 9px 9px;}
-  .stmt-footer{margin-top:8px;padding:16px 28px 22px;border-top:1px solid var(--line);font-size:10.5px;color:#5C7089;background:var(--paper);}
-  .stmt-sign-row{display:flex;justify-content:space-between;margin-top:38px;gap:20px;}
-  .stmt-sign-line{flex:1;max-width:220px;border-top:1px solid #96A4BC;padding-top:6px;text-align:center;font-size:10.5px;color:var(--text);}
-  @media print{
-    .stmt-doc{border-radius:0;border:none;}
-    .stmt-sum-box{break-inside:avoid;}
-    .stmt-section{break-inside:avoid;}
   }
 
   @media (max-width:860px){
@@ -532,6 +484,31 @@
     .bottom-tabs button{font-size:8.8px;}
     .stat-grid{grid-template-columns:1fr 1fr;}
   }
+  /* ---------- STOCK PAGE: stacked cards on phone ---------- */
+  @media (max-width:640px){
+    table.stock-table thead{display:none;}
+    table.stock-table, table.stock-table tbody, table.stock-table tr, table.stock-table td{
+      display:block; width:100%;
+    }
+    table.stock-table tr{
+      border:1px solid var(--line); border-radius:var(--radius-sm);
+      padding:10px 12px; margin-bottom:10px; background:var(--white);
+    }
+    table.stock-table tr:last-child{margin-bottom:0;}
+    table.stock-table td{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      border-bottom:1px dashed var(--line); padding:7px 0; text-align:right;
+    }
+    table.stock-table td:last-child{border-bottom:none;}
+    table.stock-table td::before{
+      content:attr(data-label); font-size:11px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.04em; color:var(--text-dim); text-align:left; flex-shrink:0;
+    }
+    table.stock-table td.stock-actions{justify-content:flex-start;}
+    table.stock-table td.stock-actions::before{display:none;}
+    table.stock-table td.stock-actions{flex-wrap:wrap; padding-top:9px;}
+    table.stock-table td.stock-actions .btn{flex:1; min-width:100px;}
+  }
   @media (hover:none) and (pointer:coarse){
     .item-tile:not(:disabled):hover,.stat-card:hover,.nav-item:hover,.btn-primary:hover,.btn-amber:hover{
       box-shadow:var(--shadow-sm);transform:none;filter:none;
@@ -543,8 +520,6 @@
 <body>
 <div id="app"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 (function(){
   "use strict";
@@ -560,31 +535,9 @@
     trend:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>'
   };
 
-  var STORE_KEY_ITEMS='pos:items', STORE_KEY_USERS='pos:users', STORE_KEY_BILLS='pos:bills', STORE_KEY_SHOP='pos:shop', STORE_KEY_PRINTERS='pos:printers', STORE_KEY_RETURNS='pos:returns';
-
-  // ---------------- LOCAL CACHE (fast load + background sync) ----------------
-  // A plain localStorage mirror of the same data kept in the Google Sheet.
-  // Purpose: paint instantly from the last-known-good copy on this device
-  // instead of making every launch wait on the Sheet (often 1-3s per
-  // request, more on mobile). The Sheet stays the one source of truth —
-  // boot() still always re-fetches from it right after and overwrites this
-  // cache with whatever comes back, and a background sync (further down)
-  // keeps refreshing it so changes made on other devices show up here too.
-  // If localStorage is unavailable (private browsing, quota full, etc.)
-  // every call below just silently no-ops and the app falls back to
-  // talking to the Sheet directly, exactly as it did before this existed.
-  var CACHE_PREFIX = 'pos:cache:';
-  function cacheGet(name){
-    try{
-      var raw = localStorage.getItem(CACHE_PREFIX+name);
-      return raw ? JSON.parse(raw) : null;
-    }catch(e){ return null; }
-  }
-  function cacheSet(name, val){
-    try{ localStorage.setItem(CACHE_PREFIX+name, JSON.stringify(val)); }catch(e){}
-  }
-
-  var THEME_PRESETS = ['#DC2626','#16A34A','#7C3AED','#2563EB','#0D9488','#EA580C','#DB2777','#7A1315'];
+  var STORE_KEY_ITEMS='pos:items', STORE_KEY_USERS='pos:users', STORE_KEY_BILLS='pos:bills', STORE_KEY_SHOP='pos:shop', STORE_KEY_PRINTERS='pos:printers', STORE_KEY_RETURNS='pos:returns', STORE_KEY_DELETED_BILLS='pos:deletedbills';
+  var LOCAL_CACHE_KEY='pos:cache:v1';
+  var THEME_PRESETS = ['#B71C1C','#16A34A','#7C3AED','#DC2626','#0D9488','#EA580C','#DB2777','#8E1616'];
   function sameColor(a,b){ return (a||'').toLowerCase()===(b||'').toLowerCase(); }
 
   // ======= CONFIG =======
@@ -611,10 +564,11 @@
     users:[],
     bills:[],
     returns:[],
+    deletedBills:[],
     returnForm:null,
     stockReturnForm:null,
     printerHistory:[],
-    shop:{name:'My Shop', appTitle:'BILL APP', address:'No.12, Galle Road, Colombo', phone:'077 123 4567', currency:'Rs.', footer:'Thank you! Come again.', width:'80', printingEnabled:true, printerReconnectDelaySec:3, adminPin:'1234', profitPin:'1234', billPrefix:'AJ', repLabel:'Sales Rep', repLabelFull:'Sales Representative', logo:'', billStart:1, themeColor:'#DC2626'},
+    shop:{name:'My Shop', appTitle:'BILL APP', address:'No.12, Galle Road, Colombo', phone:'077 123 4567', currency:'Rs.', footer:'Thank you! Come again.', width:'80', printingEnabled:true, printerReconnectDelaySec:3, adminPin:'1234', profitPin:'1234', billPrefix:'AJ', repLabel:'Sales Rep', repLabelFull:'Sales Representative', logo:'', billStart:1, themeColor:'#B71C1C'},
     cart:[],
     itemSearch:'',
     discountType:'amount',
@@ -642,10 +596,11 @@
     reportPayment:'all',
     reportSelectedDate: todayISO(),
     expandedDay:null,
-    mrMonth: monthKey(new Date().toISOString()),
-    mrFrom:'',
-    mrTo:'',
-    showMonthlyReport:false,
+    cashSummaryCollapsed:false,
+    monthlyRepMode:'month',
+    monthlyRepMonth: todayISO().slice(0,7),
+    monthlyRepFrom:'',
+    monthlyRepTo:'',
     adminTab:'items',
     itemForm:null,
     userForm:null,
@@ -662,7 +617,8 @@
     profitPinInput:'',
     profitPinErr:'',
     profitPinChangeMsg:null,
-    billFindQuery:''
+    billFindQuery:'',
+    pendingCreditExpandedCust: null
   };
 
   // Debounce helper: full-page re-render on every keystroke is what makes
@@ -916,7 +872,7 @@
       state.printerHistory.push({ name:name, firstConnected:nowISO, lastConnected:nowISO, timesConnected:1 });
     }
     storageSet(STORE_KEY_PRINTERS, state.printerHistory).then(function(ok){
-      if(ok){ cacheSet('printers', state.printerHistory); syncReadableSheets(); }
+      if(ok) syncReadableSheets();
     });
   }
 
@@ -1065,6 +1021,14 @@
         shareBillImage(bill);
       });
     });
+    document.querySelectorAll('[data-view-bill]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-view-bill');
+        var bill = state.bills.find(function(b){ return b.id===id; });
+        if(!bill) return;
+        viewBillImage(bill);
+      });
+    });
 
     // "Added in error" — lets an admin permanently remove a bill that was
     // never a real sale. Restores stock for the bill's line items (best
@@ -1076,30 +1040,29 @@
         var bill = state.bills.find(function(b){ return b.id===id; });
         if(!bill) return;
         if(!confirm('Delete bill '+bill.no+'? Use this only if it was added in error — this removes it permanently (stock will be restored) and cannot be undone.')) return;
-        // Snapshot so this can be rolled back if saving to the Sheet fails.
-        // Without this, a failed save still removed the bill from the
-        // screen, so it looked deleted until the next refresh pulled the
-        // untouched (still-has-the-bill) data back down from the Sheet.
-        var billsBackup = state.bills.slice();
-        var itemsBackup = state.items.map(function(i){ return Object.assign({}, i); });
         (bill.items||[]).forEach(function(it){
           var item = state.items.find(function(i){ return i.name===it.name; });
           if(item) item.stock = (item.stock||0) + (Number(it.qty)||0);
+        });
+        state.deletedBills = state.deletedBills || [];
+        state.deletedBills.push({
+          id: uid('delbill'),
+          dateISO: new Date().toISOString(),
+          billNo: bill.no||'',
+          billDateISO: bill.dateISO||'',
+          customerName: bill.customerName||'',
+          customerPhone: bill.customerPhone||'',
+          total: bill.total||0,
+          payment: bill.payment||'',
+          items: (bill.items||[]).map(function(it){ return {name:it.name, qty:it.qty}; }),
+          deletedBy: state.currentUser.name
         });
         state.bills = state.bills.filter(function(b){ return b.id!==id; });
         if(state.payFormOpenId===id) state.payFormOpenId=null;
         if(state.billEditForm && state.billEditForm.billId===id) state.billEditForm=null;
         state.busyMsg = 'Deleting bill…';
         render();
-        var results = await Promise.all([persist('bills'), persist('items')]);
-        var saved = results[0] && results[1];
-        if(!saved){
-          state.bills = billsBackup;
-          state.items = itemsBackup;
-          alert('Delete failed — '+(state.storageErr||'could not reach Google Sheet.')+' Bill '+bill.no+' was NOT deleted; please check your connection and try again.');
-        } else {
-          alert('Bill '+bill.no+' deleted successfully.');
-        }
+        await Promise.all([persist('bills'), persist('items'), persist('deletedBills')]);
         state.busyMsg = '';
         render();
       });
@@ -1110,7 +1073,7 @@
     return state.currentUser && state.currentUser.role==='admin';
   }
   function deleteBillButtonHtml(b){
-    return canDeleteBills() ? '<button class="btn btn-danger btn-sm" data-delete-bill="'+b.id+'" title="Delete this bill — use only if it was added in error">Delete (added in error)</button>' : '';
+    return '';
   }
 
   async function refreshData(){
@@ -1126,14 +1089,17 @@
         storageGet(STORE_KEY_USERS),
         storageGet(STORE_KEY_BILLS),
         storageGet(STORE_KEY_SHOP),
-        storageGet(STORE_KEY_RETURNS)
+        storageGet(STORE_KEY_RETURNS),
+        storageGet(STORE_KEY_DELETED_BILLS)
       ]);
-      var items = results[0], users = results[1], bills = results[2], shop = results[3], returns = results[4];
+      var items = results[0], users = results[1], bills = results[2], shop = results[3], returns = results[4], deletedBills = results[5];
       if(items) state.items = items;
       if(users) state.users = users;
       if(bills) state.bills = bills;
       if(shop) state.shop = Object.assign({}, state.shop, shop);
       if(returns) state.returns = returns;
+      if(deletedBills) state.deletedBills = deletedBills;
+      saveLocalCache();
     }catch(e){
       alert('Could not refresh data: '+(e.message||e));
     }
@@ -1581,6 +1547,57 @@
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
     }, 'image/png');
+  }
+
+  // Opens a full-screen overlay showing the bill rendered as a PNG image.
+  // Lets the user long-press / right-click to save, or just inspect it
+  // before deciding whether to share. No external libraries needed.
+  function viewBillImage(bill){
+    if(!bill) return;
+    var canvas;
+    try{ canvas = billToCanvas(bill); }
+    catch(e){ alert('Could not render the bill image: '+(e.message||e)); return; }
+    var dataUrl = canvas.toDataURL('image/png');
+    var overlay = document.createElement('div');
+    overlay.id = 'bill-img-overlay';
+    overlay.style.cssText = [
+      'position:fixed;inset:0;z-index:9999;',
+      'background:rgba(15,61,117,.82);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);',
+      'display:flex;flex-direction:column;align-items:center;justify-content:center;',
+      'padding:16px;gap:14px;'
+    ].join('');
+    var img = document.createElement('img');
+    img.src = dataUrl;
+    img.alt = 'Bill '+bill.no;
+    img.style.cssText = [
+      'max-width:min(420px,100%);max-height:80vh;',
+      'border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.55);',
+      'display:block;'
+    ].join('');
+    var btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;justify-content:center;';
+    var closeBtn = document.createElement('button');
+    closeBtn.textContent = '✕  Close';
+    closeBtn.style.cssText = [
+      'padding:9px 22px;background:#FFFFFF;border:none;border-radius:8px;',
+      'font-family:inherit;font-weight:700;font-size:13.5px;cursor:pointer;',
+      'color:#8E1616;box-shadow:0 2px 8px rgba(0,0,0,.18);'
+    ].join('');
+    var shareBtn2 = document.createElement('button');
+    shareBtn2.textContent = '↗  Share';
+    shareBtn2.style.cssText = [
+      'padding:9px 22px;background:#B71C1C;border:none;border-radius:8px;',
+      'font-family:inherit;font-weight:700;font-size:13.5px;cursor:pointer;',
+      'color:#fff;box-shadow:0 2px 8px rgba(183,28,28,.35);'
+    ].join('');
+    shareBtn2.addEventListener('click', function(e){ e.stopPropagation(); shareBillImage(bill); });
+    closeBtn.addEventListener('click', function(){ document.body.removeChild(overlay); });
+    overlay.addEventListener('click', function(e){ if(e.target===overlay) document.body.removeChild(overlay); });
+    btnRow.appendChild(shareBtn2);
+    btnRow.appendChild(closeBtn);
+    overlay.appendChild(img);
+    overlay.appendChild(btnRow);
+    document.body.appendChild(overlay);
   }
 
   // =====================================================================
@@ -2088,6 +2105,35 @@
     }
   }
 
+  // ---------------- LOCAL FAST-LOAD CACHE ----------------
+  // A localStorage mirror of the last known-good Sheet data. This is
+  // purely a speed layer — the Google Sheet stays the single source of
+  // truth and every save still goes there exactly as before. The cache
+  // only lets boot() paint real data immediately instead of showing a
+  // spinner for however long the Apps Script round-trip takes, and it is
+  // refreshed every time a Sheet read or write succeeds so it stays in
+  // sync with the real data rather than going stale.
+  function loadLocalCache(){
+    try{
+      var raw = localStorage.getItem(LOCAL_CACHE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+  function saveLocalCache(){
+    try{
+      localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify({
+        items: state.items,
+        users: state.users,
+        bills: state.bills,
+        shop: shopForStorage(state.shop),
+        returns: state.returns,
+        deletedBills: state.deletedBills,
+        printers: state.printerHistory,
+        ts: Date.now()
+      }));
+    }catch(e){}
+  }
+
   function seedDefaults(){
     state.items = [
       {id:uid('it'), name:'Rice 5kg', price:1450, stock:32, category:'Grocery', purchasePrice:1180},
@@ -2134,32 +2180,27 @@
   // Applies the admin-chosen accent color to the CSS custom properties that
   // drive buttons, links, and highlights throughout the app.
   function applyTheme(){
-    var color = (state.shop && state.shop.themeColor) ? state.shop.themeColor : '#DC2626';
-    if(!/^#[0-9a-fA-F]{6}$/.test(color)) color = '#DC2626';
+    var color = (state.shop && state.shop.themeColor) ? state.shop.themeColor : '#B71C1C';
+    if(!/^#[0-9a-fA-F]{6}$/.test(color)) color = '#B71C1C';
     document.documentElement.style.setProperty('--green', color);
     document.documentElement.style.setProperty('--green-light', lightenHex(color, 0.28));
   }
 
   async function boot(){
-    // Fast path: paint instantly from the local cache if this device has
-    // one from a previous successful load, instead of leaving the person
-    // stuck on the loading screen for however long the Sheet takes to
-    // answer. This is only ever a head start — the real fetch right below
-    // still runs every time regardless, and overwrites state (and the
-    // cache) with whatever the Sheet actually has the moment it answers.
-    var cachedItems = cacheGet('items');
-    var cachedUsers = cacheGet('users');
-    if(cachedItems && cachedUsers){
-      state.items = cachedItems;
-      state.users = cachedUsers;
-      var cachedBills = cacheGet('bills');
-      if(cachedBills) state.bills = cachedBills;
-      var cachedShop = cacheGet('shop');
-      if(cachedShop) state.shop = Object.assign({}, state.shop, cachedShop);
-      var cachedPrinters = cacheGet('printers');
-      if(cachedPrinters) state.printerHistory = cachedPrinters;
-      var cachedReturns = cacheGet('returns');
-      if(cachedReturns) state.returns = cachedReturns;
+    // Fast path: hydrate instantly from the local cache (if any) so the
+    // app can paint real data right away instead of the loading spinner,
+    // while the Google Sheet round-trip (often slow) happens underneath.
+    // The live fetch below still runs immediately after and overwrites
+    // this — the cache is only ever a head start, never a replacement.
+    var cached = loadLocalCache();
+    if(cached){
+      if(cached.items) state.items = cached.items;
+      if(cached.users) state.users = cached.users;
+      if(cached.bills) state.bills = cached.bills;
+      if(cached.shop) state.shop = Object.assign({}, state.shop, cached.shop);
+      if(cached.returns) state.returns = cached.returns;
+      if(cached.deletedBills) state.deletedBills = cached.deletedBills;
+      if(cached.printers) state.printerHistory = cached.printers;
       state.items.forEach(ensureItemBatches);
       applyAppTitle();
       applyTheme();
@@ -2180,9 +2221,10 @@
       storageGet(STORE_KEY_BILLS),
       storageGet(STORE_KEY_SHOP),
       storageGet(STORE_KEY_PRINTERS),
-      storageGet(STORE_KEY_RETURNS)
+      storageGet(STORE_KEY_RETURNS),
+      storageGet(STORE_KEY_DELETED_BILLS)
     ]);
-    var itemsR = settled[0], usersR = settled[1], billsR = settled[2], shopR = settled[3], printersR = settled[4], returnsR = settled[5];
+    var itemsR = settled[0], usersR = settled[1], billsR = settled[2], shopR = settled[3], printersR = settled[4], returnsR = settled[5], deletedBillsR = settled[6];
     var items = itemsR.status==='fulfilled' ? itemsR.value : undefined;
     var users = usersR.status==='fulfilled' ? usersR.value : undefined;
     var bills = billsR.status==='fulfilled' ? billsR.value : undefined;
@@ -2208,13 +2250,15 @@
         storageSet(STORE_KEY_USERS, state.users),
         storageSet(STORE_KEY_BILLS, state.bills),
         storageSet(STORE_KEY_SHOP, shopForStorage(state.shop)),
-        storageSet(STORE_KEY_RETURNS, state.returns)
+        storageSet(STORE_KEY_RETURNS, state.returns),
+        storageSet(STORE_KEY_DELETED_BILLS, state.deletedBills)
       ]);
     } else {
       state.items = items;
       state.users = users;
       if(billsR.status==='fulfilled') state.bills = bills || [];
       if(returnsR.status==='fulfilled') state.returns = returns || [];
+      if(deletedBillsR.status==='fulfilled') state.deletedBills = deletedBillsR.value || [];
       if(shop) state.shop = Object.assign({}, state.shop, shop);
     }
     if(anyFailed){
@@ -2229,17 +2273,10 @@
     if(printersR.status==='fulfilled') state.printerHistory = printers || [];
     // Backfill batches for items saved before purchase-price tracking existed.
     state.items.forEach(ensureItemBatches);
-    if(!anyFailed){
-      // Everything came back from the Sheet successfully — refresh the
-      // local cache with it so the next launch's fast path (above) starts
-      // from this instead of whatever (possibly older) copy was there.
-      cacheSet('items', state.items);
-      cacheSet('users', state.users);
-      cacheSet('bills', state.bills);
-      cacheSet('shop', state.shop);
-      cacheSet('printers', state.printerHistory);
-      cacheSet('returns', state.returns);
-    }
+    // Refresh the fast-load cache with this confirmed-live data (only once
+    // items/users actually came from the Sheet — never cache the "request
+    // failed, kept old state" case as if it were fresh).
+    if(itemsR.status==='fulfilled' && usersR.status==='fulfilled') saveLocalCache();
     try{
       var lastPrinter = localStorage.getItem(PRINTER_STORE_KEY);
       if(lastPrinter) state.printer.status = 'Last used: '+lastPrinter+'. Reconnecting…';
@@ -2258,60 +2295,6 @@
         }catch(e){}
         render();
       }
-    });
-  }
-
-  // ---------------- BACKGROUND SYNC (real-time-ish, multi-device) ----------------
-  // Google Sheets has no push/websocket channel to tell this app when
-  // another device changed something, so this quietly re-checks it every
-  // so often instead — pure read, never writes (persist() below is still
-  // what pushes this device's own changes out, immediately, exactly as
-  // before). It skips itself whenever the tab isn't visible, boot hasn't
-  // finished (or failed and is waiting on a manual Retry), or a form/modal
-  // is open — so it can never interrupt someone mid-edit.
-  var SYNC_POLL_MS = 20000;
-  var backgroundSyncInFlight = false;
-  function formOrModalOpen(){
-    return !!(state.itemForm || state.userForm || state.billEditForm || state.returnForm ||
-      state.stockReturnForm || state.restockForm || state.payFormOpenId || state.printerModalOpen ||
-      state.showReceipt || state.showPaymentReceipt || state.showMonthlyReport || state.busyMsg);
-  }
-  async function backgroundSync(){
-    if(backgroundSyncInFlight) return;
-    if(!state.booted || state.bootLoadFailed || !sheetConfigured()) return;
-    if(document.visibilityState==='hidden') return;
-    if(formOrModalOpen()) return;
-    backgroundSyncInFlight = true;
-    try{
-      var settled = await Promise.allSettled([
-        storageGet(STORE_KEY_ITEMS),
-        storageGet(STORE_KEY_USERS),
-        storageGet(STORE_KEY_BILLS),
-        storageGet(STORE_KEY_SHOP),
-        storageGet(STORE_KEY_RETURNS)
-      ]);
-      // Re-check — a form/modal can easily have opened during the round
-      // trip above (each of these calls can take a second or two).
-      if(formOrModalOpen()) return;
-      var items = settled[0].status==='fulfilled' ? settled[0].value : null;
-      var users = settled[1].status==='fulfilled' ? settled[1].value : null;
-      var bills = settled[2].status==='fulfilled' ? settled[2].value : null;
-      var shop = settled[3].status==='fulfilled' ? settled[3].value : null;
-      var returns = settled[4].status==='fulfilled' ? settled[4].value : null;
-      var changed = false;
-      if(items){ state.items = items; state.items.forEach(ensureItemBatches); cacheSet('items', items); changed = true; }
-      if(users){ state.users = users; cacheSet('users', users); changed = true; }
-      if(bills){ state.bills = bills; cacheSet('bills', bills); changed = true; }
-      if(shop){ state.shop = Object.assign({}, state.shop, shop); cacheSet('shop', state.shop); applyAppTitle(); applyTheme(); changed = true; }
-      if(returns){ state.returns = returns; cacheSet('returns', returns); changed = true; }
-      if(changed) render();
-    }catch(e){ /* silent — the next poll just tries again */ }
-    finally{ backgroundSyncInFlight = false; }
-  }
-  function startBackgroundSync(){
-    setInterval(backgroundSync, SYNC_POLL_MS);
-    document.addEventListener('visibilitychange', function(){
-      if(document.visibilityState==='visible') backgroundSync();
     });
   }
 
@@ -2335,16 +2318,7 @@
     if(key==='bills') ok = await storageSet(STORE_KEY_BILLS, state.bills);
     if(key==='shop') ok = await storageSet(STORE_KEY_SHOP, shopForStorage(state.shop));
     if(key==='returns') ok = await storageSet(STORE_KEY_RETURNS, state.returns);
-    if(ok){
-      // Keep the local cache in lockstep with whatever just got confirmed
-      // saved to the Sheet, so the next launch's fast path (see boot())
-      // starts from this instead of the previous, now-stale copy.
-      if(key==='items') cacheSet('items', state.items);
-      if(key==='users') cacheSet('users', state.users);
-      if(key==='bills') cacheSet('bills', state.bills);
-      if(key==='shop') cacheSet('shop', state.shop);
-      if(key==='returns') cacheSet('returns', state.returns);
-    }
+    if(key==='deletedBills') ok = await storageSet(STORE_KEY_DELETED_BILLS, state.deletedBills);
     // Fire-and-forget: also mirror the data into separate, human-readable
     // tabs in the same Google Sheet (Bills, Shop Details, Customers,
     // Customer Statement, Stock, Stock In-Out, Accounts, Cheque Details,
@@ -2355,6 +2329,7 @@
     // rebuilds+uploads — that background flood of requests was the main
     // thing making shop-settings saves feel sluggish.
     if(ok) syncReadableSheets(key);
+    if(ok) saveLocalCache();
     return ok;
   }
 
@@ -2748,7 +2723,7 @@
   // to true — whether that load succeeds or fails.
   function renderBootLoadingScreen(){
     return '<div class="boot-loading-screen">'+
-      '<div class="brand"><span class="name">ANANTH INDUSTRY</span></div>'+
+      '<div class="brand"><span class="name">AJ PRODUCTS</span></div>'+
       '<div class="boot-spinner"></div>'+
       '<div class="msg">Loading your data&hellip;</div>'+
     '</div>';
@@ -2807,7 +2782,6 @@
     '<div class="bottom-tabs">'+bottomNavHtml+'</div>'+
     (state.showReceipt ? renderReceiptModal() : '')+
     (state.showPaymentReceipt ? renderPaymentReceiptModal() : '')+
-    (state.showMonthlyReport ? renderMonthlyReportModal() : '')+
     (state.printerModalOpen ? renderPrinterSettingsModal() : '');
   }
 
@@ -3346,7 +3320,10 @@
           '<button class="btn btn-ghost" id="print-again" style="flex:1;">Print (browser)</button>'+
         '</div>'
       ) : '<div class="printer-msg">Printing is turned off (Admin &gt; Shop settings).</div>')+
-      '<button class="btn btn-amber btn-block" id="share-bill-btn" style="margin-top:8px;">Share bill as photo</button>'+
+      '<div style="display:flex;gap:8px;margin-top:8px;">'+
+        '<button class="btn btn-ghost btn-block" id="view-bill-btn" style="flex:1;">View as photo</button>'+
+        '<button class="btn btn-amber btn-block" id="share-bill-btn" style="flex:1;">Share as photo</button>'+
+      '</div>'+
       '<button class="btn btn-ghost btn-block" id="receipt-done" style="margin-top:8px;">Done</button>'+
     '</div></div>';
   }
@@ -3358,6 +3335,7 @@
     var btPrintBtn = document.getElementById('bt-print');
     var btConnectBtn = document.getElementById('bt-connect');
     var shareBtn = document.getElementById('share-bill-btn');
+    var viewBtn = document.getElementById('view-bill-btn');
     function closeIt(){ state.showReceipt=false; state.printer.status=''; render(); }
     if(closeBtn) closeBtn.addEventListener('click', closeIt);
     if(doneBtn) doneBtn.addEventListener('click', closeIt);
@@ -3369,6 +3347,7 @@
     if(btPrintBtn) btPrintBtn.addEventListener('click', function(){ printBillToBluetooth(state.lastBill); });
     if(btConnectBtn) btConnectBtn.addEventListener('click', connectPrinter);
     if(shareBtn) shareBtn.addEventListener('click', function(){ shareBillImage(state.lastBill); });
+    if(viewBtn) viewBtn.addEventListener('click', function(){ viewBillImage(state.lastBill); });
   }
 
   // Receipt for a single payment recorded against a credit ("on account")
@@ -3454,9 +3433,6 @@
 
   function renderAccountBillRow(b){
     var paid = billPaidTotal(b), bal = billBalance(b), status = billStatus(b);
-    var isPayOpen = state.payFormOpenId === b.id;
-    var isEditOpen = state.billEditForm && state.billEditForm.billId === b.id;
-    var isReturnOpen = state.returnForm && state.returnForm.billId === b.id;
     var payHistHtml = billPayments_(b);
     var isAcct = b.payment==='account';
     return '<div class="card" style="margin-bottom:12px;">'+
@@ -3478,38 +3454,95 @@
         '<button class="btn btn-ghost btn-sm" data-toggle-edit="'+b.id+'">Edit Bill</button>'+
         (billHasReturnableQty(b) ? '<button class="btn btn-amber btn-sm" data-toggle-return="'+b.id+'" title="Customer is returning some or all items from this bill">Return Bill</button>' : '')+
         (printingEnabled() ? '<button class="btn btn-ghost btn-sm" data-print-bill="'+b.id+'">Print Bill</button>' : '')+
+        '<button class="btn btn-ghost btn-sm" data-view-bill="'+b.id+'">View as photo</button>'+
         '<button class="btn btn-ghost btn-sm" data-share-bill="'+b.id+'">Share as photo</button>'+
         deleteBillButtonHtml(b)+
       '</div>'+
-      (isPayOpen ? '<div class="inline-pay">'+
-        '<input type="number" min="0" step="0.01" inputmode="decimal" id="pay-amt-'+b.id+'" placeholder="Amount" value="'+bal+'">'+
-        '<button class="btn btn-primary btn-sm" data-record-pay="'+b.id+'">Record Payment</button>'+
-        '<button class="btn btn-ghost btn-sm" data-cancel-pay="'+b.id+'">Cancel</button>'+
-      '</div>' : '')+
-      (isEditOpen ? renderBillEditForm(b) : '')+
-      (isReturnOpen ? renderReturnForm(b) : '')+
     '</div>';
   }
 
-  function renderReturnForm(b){
+  // Receive Payment popup — rendered once (not per-row) and appended to the
+  // page, matching the Restock / Return Bill / Edit Bill modal style.
+  function renderReceivePaymentModal(){
+    var id = state.payFormOpenId;
+    if(!id) return '';
+    var b = state.bills.find(function(bl){ return bl.id===id; });
+    if(!b) return '';
+    var paid = billPaidTotal(b), bal = billBalance(b);
+    var half = Math.round((bal/2)*100)/100;
+    return '<div class="modal-bg" id="pay-modal-bg">'+
+      '<div class="modal-box" style="max-width:400px;">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">'+
+          '<div>'+
+            '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--green);font-weight:700;margin-bottom:2px;">Receive Payment</div>'+
+            '<div style="font-size:19px;font-weight:800;color:var(--ink);">Bill '+b.no+'</div>'+
+            (b.customerName ? '<div style="font-size:12.5px;color:var(--text-dim);">'+escapeHtml(b.customerName)+(b.customerPhone?' &middot; '+escapeHtml(b.customerPhone):'')+'</div>' : '')+
+          '</div>'+
+          '<button id="pay-close" style="background:var(--paper-dark);border:none;border-radius:50%;width:34px;height:34px;font-size:18px;line-height:1;cursor:pointer;color:var(--text-dim);flex-shrink:0;" title="Close">&times;</button>'+
+        '</div>'+
+        '<div style="background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:16px;">'+
+          '<div class="sum-row"><span>Bill total</span><span class="val">'+money(b.total)+'</span></div>'+
+          '<div class="sum-row"><span>Paid so far</span><span class="val">'+money(paid)+'</span></div>'+
+          '<div class="sum-row total"><span>Balance due</span><span class="val">'+money(bal)+'</span></div>'+
+        '</div>'+
+        '<div class="field">'+
+          '<label style="font-size:13px;font-weight:700;color:var(--ink);">Amount received</label>'+
+          '<input type="number" min="0" step="0.01" inputmode="decimal" id="pay-amt-'+b.id+'" value="'+bal+'" style="margin-top:6px;width:100%;height:46px;border:1.5px solid var(--line);border-radius:var(--radius-sm);font-family:inherit;font-size:17px;font-weight:700;color:var(--ink);padding:0 14px;">'+
+        '</div>'+
+        '<div style="display:flex;gap:8px;margin-top:10px;">'+
+          '<button type="button" class="btn btn-ghost btn-sm" data-pay-quick="half" data-pay-quick-id="'+b.id+'" style="flex:1;">Half &middot; '+money(half)+'</button>'+
+          '<button type="button" class="btn btn-ghost btn-sm" data-pay-quick="full" data-pay-quick-id="'+b.id+'" style="flex:1;">Full &middot; '+money(bal)+'</button>'+
+        '</div>'+
+        '<div style="display:flex;gap:10px;margin-top:18px;">'+
+          '<button class="btn btn-ghost" id="pay-cancel" style="flex:1;">Cancel</button>'+
+          '<button class="btn btn-primary" id="pay-record" data-record-pay="'+b.id+'" style="flex:2;font-size:15px;">Record Payment</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }
+
+  // Return Bill popup — rendered once (not per-row) and appended to the
+  // page, matching the Restock / Remove Stock modal style.
+  function renderReturnModal(){
     var f = state.returnForm;
+    if(!f) return '';
+    var b = state.bills.find(function(bl){ return bl.id===f.billId; });
+    if(!b) return '';
     var lines = (b.items||[]).map(function(it, idx){
       var remaining = billItemRemainingQty(it);
       if(remaining<=0.004) return '';
       var val = (f.qtys[idx]!=null) ? f.qtys[idx] : 0;
-      return '<div class="edit-line">'+
-        '<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(it.name)+' <span class="mono" style="color:var(--text-dim);">(bought '+it.qty+(it.returned?', already returned '+it.returned:'')+')</span></span>'+
-        '<input class="eq" type="number" min="0" max="'+remaining+'" inputmode="numeric" data-ridx="'+idx+'" value="'+val+'" title="Qty to return">'+
+      return '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);">'+
+        '<span style="flex:1;min-width:0;">'+
+          '<div style="font-weight:600;font-size:13.5px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escapeHtml(it.name)+'</div>'+
+          '<div class="mono" style="font-size:11px;color:var(--text-dim);">bought '+it.qty+(it.returned?', already returned '+it.returned:'')+'</div>'+
+        '</span>'+
+        '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">'+
+          '<button type="button" class="ret-qty-dec" data-rdec="'+idx+'" style="width:32px;height:36px;border:1.5px solid var(--line);border-radius:var(--radius-sm);background:var(--paper);font-size:18px;font-weight:700;cursor:pointer;color:var(--ink);flex-shrink:0;">−</button>'+
+          '<input class="eq" type="number" min="0" max="'+remaining+'" inputmode="numeric" data-ridx="'+idx+'" value="'+val+'" title="Qty to return" style="width:52px;text-align:center;height:36px;border:1.5px solid var(--line);border-radius:var(--radius-sm);font-family:inherit;font-size:15px;font-weight:700;color:var(--ink);background:var(--white);">'+
+          '<button type="button" class="ret-qty-inc" data-rinc="'+idx+'" style="width:32px;height:36px;border:1.5px solid var(--line);border-radius:var(--radius-sm);background:var(--paper);font-size:18px;font-weight:700;cursor:pointer;color:var(--ink);flex-shrink:0;">+</button>'+
+        '</div>'+
       '</div>';
     }).join('');
-    return '<div class="card" style="margin-top:10px;background:var(--paper);">'+
-      '<div class="section-head"><h3>Return items from Bill '+b.no+'</h3></div>'+
-      '<div class="note-box">Enter the quantity being returned for each item. Returned items go back into stock and the bill total (and balance due, if on account) is reduced accordingly.</div>'+
-      (lines || '<div class="empty-note">Nothing left to return on this bill.</div>')+
-      '<div class="field" style="margin-top:10px;"><label>Reason (optional)</label><input id="ret-reason" placeholder="e.g. damaged, wrong item, customer changed mind" value="'+escapeHtml(f.reason||'')+'"></div>'+
-      '<div class="modal-actions">'+
-        '<button class="btn btn-primary" id="ret-save" style="flex:1;">Confirm Return</button>'+
-        '<button class="btn btn-ghost" id="ret-cancel" style="flex:1;">Cancel</button>'+
+    return '<div class="modal-bg" id="return-modal-bg">'+
+      '<div class="modal-box" style="max-width:420px;">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">'+
+          '<div>'+
+            '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);font-weight:700;margin-bottom:2px;">Return Bill</div>'+
+            '<div style="font-size:19px;font-weight:800;color:var(--ink);">Bill '+b.no+'</div>'+
+            (b.customerName ? '<div style="font-size:12.5px;color:var(--text-dim);">'+escapeHtml(b.customerName)+'</div>' : '')+
+          '</div>'+
+          '<button id="ret-close" style="background:var(--paper-dark);border:none;border-radius:50%;width:34px;height:34px;font-size:18px;line-height:1;cursor:pointer;color:var(--text-dim);flex-shrink:0;" title="Close">&times;</button>'+
+        '</div>'+
+        '<div class="note-box" style="margin-bottom:10px;">Enter the quantity being returned for each item. Returned items go back into stock and the bill total (and balance due, if on account) is reduced accordingly.</div>'+
+        '<div style="max-height:44vh;overflow-y:auto;margin-bottom:4px;">'+
+          (lines || '<div class="empty-note">Nothing left to return on this bill.</div>')+
+        '</div>'+
+        '<div class="field" style="margin-top:12px;"><label style="font-size:13px;font-weight:700;color:var(--ink);">Reason (optional)</label><input id="ret-reason" placeholder="e.g. damaged, wrong item, customer changed mind" value="'+escapeHtml(f.reason||'')+'" style="margin-top:4px;width:100%;height:44px;border:1.5px solid var(--line);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;padding:0 12px;"></div>'+
+        '<div style="display:flex;gap:10px;margin-top:18px;">'+
+          '<button class="btn btn-ghost" id="ret-cancel" style="flex:1;">Cancel</button>'+
+          '<button class="btn btn-amber" id="ret-save" style="flex:2;font-size:15px;">&#8617; Confirm Return</button>'+
+        '</div>'+
       '</div>'+
     '</div>';
   }
@@ -3541,6 +3574,7 @@
     var collFrom = hasDateFilter ? dateFrom : todayStr;
     var collTo = hasDateFilter ? dateTo : todayStr;
     var collectedAmt = 0;
+    var collectedList = [];
     state.bills.forEach(function(b){
       if(b.payment!=='account') return;
       (b.payments||[]).forEach(function(p){
@@ -3548,8 +3582,10 @@
         if(collFrom && day < collFrom) return;
         if(collTo && day > collTo) return;
         collectedAmt += p.amount;
+        collectedList.push({billNo:b.no, billId:b.id, custName:b.customerName||'(no name)', custPhone:b.customerPhone||'', amount:p.amount, dateISO:p.dateISO, note:p.note||'', payId:p.id});
       });
     });
+    collectedList.sort(function(a,c){ return new Date(c.dateISO)-new Date(a.dateISO); });
     var collectedLabel = hasDateFilter ? ('Collected ('+escapeHtml(dateFrom||'…')+' &rarr; '+escapeHtml(dateTo||'…')+')') : 'Collected Today';
 
     // "All Bills" now really means all bills (any date), not just today's —
@@ -3585,6 +3621,28 @@
           '<div class="stat-card"><div class="lbl">'+collectedLabel+'</div><div class="val">'+money(collectedAmt)+'</div></div>'+
         '</div>';
 
+    var collectedRowsHtml = collectedList.map(function(p){
+      return '<tr>'+
+        '<td>'+escapeHtml(p.billNo)+'</td>'+
+        '<td>'+new Date(p.dateISO).toLocaleString()+'</td>'+
+        '<td>'+escapeHtml(p.custName)+(p.custPhone?' <span style="color:var(--text-dim);font-size:11.5px;">('+escapeHtml(p.custPhone)+')</span>':'')+'</td>'+
+        '<td class="num">'+money(p.amount)+'</td>'+
+        '<td>'+escapeHtml(p.note||'&mdash;')+'</td>'+
+        '<td style="white-space:nowrap;">'+
+          '<button class="btn btn-ghost btn-sm" data-print-payment="'+p.billId+'|'+p.payId+'" style="margin-right:4px;">&#128424; Receipt</button>'+
+          '<button class="btn btn-amber btn-sm" data-return-payment="'+p.billId+'|'+p.payId+'" style="margin-right:4px;" title="Reverse this payment — money returned to customer">&#8617; Return</button>'+
+          (canDeleteBills() ? '<button class="btn btn-danger btn-sm" data-delete-payment="'+p.billId+'|'+p.payId+'" title="Delete this payment — use only if recorded in error">&#128465; Delete</button>' : '')+
+        '</td>'+
+      '</tr>';
+    }).join('');
+
+    var collectedListHtml = tab==='today' ? '' :
+      '<div class="card" style="margin-top:16px;"><div class="section-head"><h3>'+collectedLabel+' &mdash; Payments ('+collectedList.length+')</h3></div>'+
+      (collectedRowsHtml
+        ? '<table><thead><tr><th>Bill</th><th>Date &amp; Time</th><th>Customer</th><th>Amount</th><th>Note</th><th></th></tr></thead><tbody>'+collectedRowsHtml+'</tbody></table>'
+        : '<div class="empty-note">No payments collected '+(hasDateFilter?'in this date range':'today')+' yet.</div>')+
+      '</div>';
+
     var emptyMsg = tab==='today'
       ? ('No bills'+((q||hasDateFilter)?' match this search/date filter.':' yet.'))
       : ('No account (credit) bills'+((q||hasDateFilter)?' match this search/date filter.':' yet. Sell something with payment type &quot;Account&quot; to see it here.'));
@@ -3604,9 +3662,13 @@
       pageActionsHtml()+
       tabsHtml+
       statsHtml+
+      collectedListHtml+
       '<div class="search-row"><input id="acct-search" placeholder="Search by customer, phone, bill no., or date…" value="'+escapeHtml(state.acctSearch||'')+'" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>'+
       dateFilterHtml+
-      (rows || '<div class="empty-note">'+emptyMsg+'</div>');
+      (rows || '<div class="empty-note">'+emptyMsg+'</div>')+
+      renderEditModal()+
+      renderReturnModal()+
+      renderReceivePaymentModal();
   }
 
   function billPayments_(b){
@@ -3621,31 +3683,46 @@
     return '<div style="margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);">'+rows+'</div>';
   }
 
-  function renderBillEditForm(b){
+  // Edit Bill popup — rendered once (not per-row) and appended to the
+  // page, matching the Restock / Return Bill modal style.
+  function renderEditModal(){
     var f = state.billEditForm;
+    if(!f) return '';
+    var b = state.bills.find(function(bl){ return bl.id===f.billId; });
+    if(!b) return '';
     var lines = f.items.map(function(it, idx){
-      return '<div class="edit-line">'+
-        '<input class="en" data-eidx="'+idx+'" data-efield="name" value="'+escapeHtml(it.name)+'">'+
-        '<input class="eq" type="number" min="0" inputmode="numeric" data-eidx="'+idx+'" data-efield="qty" value="'+it.qty+'" title="Qty">'+
-        '<input class="ep" type="number" min="0" step="0.01" inputmode="decimal" data-eidx="'+idx+'" data-efield="price" value="'+it.price+'" title="Price">'+
-        '<button class="rm-btn" data-eremove="'+idx+'" title="Remove line">✕</button>'+
+      return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);">'+
+        '<input class="en" data-eidx="'+idx+'" data-efield="name" value="'+escapeHtml(it.name)+'" style="flex:1;min-width:0;height:40px;border:1.5px solid var(--line);border-radius:var(--radius-sm);font-family:inherit;font-size:13.5px;padding:0 10px;color:var(--ink);background:var(--white);">'+
+        '<input class="eq" type="number" min="0" inputmode="numeric" data-eidx="'+idx+'" data-efield="qty" value="'+it.qty+'" title="Qty" style="width:56px;text-align:center;height:40px;border:1.5px solid var(--line);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;font-weight:700;color:var(--ink);background:var(--white);">'+
+        '<input class="ep" type="number" min="0" step="0.01" inputmode="decimal" data-eidx="'+idx+'" data-efield="price" value="'+it.price+'" title="Price" style="width:70px;text-align:center;height:40px;border:1.5px solid var(--line);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;font-weight:700;color:var(--ink);background:var(--white);">'+
+        '<button class="rm-btn" data-eremove="'+idx+'" title="Remove line" style="flex-shrink:0;">✕</button>'+
       '</div>';
     }).join('');
-    return '<div class="card" style="margin-top:10px;background:var(--paper);">'+
-      '<div class="section-head"><h3>Edit Bill '+b.no+'</h3></div>'+
-      '<div class="form-row">'+
-        '<div class="field"><label>Customer name</label><input id="e-cust-name" value="'+escapeHtml(f.customerName)+'"></div>'+
-        '<div class="field"><label>Phone</label><input id="e-cust-phone" inputmode="tel" value="'+escapeHtml(f.customerPhone)+'"></div>'+
-      '</div>'+
-      '<div class="field"><label>Address</label><input id="e-cust-address" value="'+escapeHtml(f.customerAddress)+'"></div>'+
-      '<div class="note-box">Fix quantities, prices, or customer details below. Stock counts are not re-adjusted automatically when you change a quantity here — check Stock afterwards if needed.</div>'+
-      (lines || '<div class="empty-note">No line items left.</div>')+
-      '<div class="form-row" style="margin-top:10px;">'+
-        '<div class="field"><label>Discount ('+state.shop.currency+' amount)</label><input id="e-discount" type="number" min="0" step="0.01" inputmode="decimal" value="'+f.discount+'"></div>'+
-      '</div>'+
-      '<div class="modal-actions">'+
-        '<button class="btn btn-primary" id="e-save" style="flex:1;">Save Changes</button>'+
-        '<button class="btn btn-ghost" id="e-cancel" style="flex:1;">Cancel</button>'+
+    return '<div class="modal-bg" id="edit-modal-bg">'+
+      '<div class="modal-box" style="max-width:460px;">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">'+
+          '<div>'+
+            '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--green);font-weight:700;margin-bottom:2px;">Edit Bill</div>'+
+            '<div style="font-size:19px;font-weight:800;color:var(--ink);">Bill '+b.no+'</div>'+
+          '</div>'+
+          '<button id="e-close" style="background:var(--paper-dark);border:none;border-radius:50%;width:34px;height:34px;font-size:18px;line-height:1;cursor:pointer;color:var(--text-dim);flex-shrink:0;" title="Close">&times;</button>'+
+        '</div>'+
+        '<div class="form-row">'+
+          '<div class="field"><label>Customer name</label><input id="e-cust-name" value="'+escapeHtml(f.customerName)+'"></div>'+
+          '<div class="field"><label>Phone</label><input id="e-cust-phone" inputmode="tel" value="'+escapeHtml(f.customerPhone)+'"></div>'+
+        '</div>'+
+        '<div class="field"><label>Address</label><input id="e-cust-address" value="'+escapeHtml(f.customerAddress)+'"></div>'+
+        '<div class="note-box" style="margin:10px 0;">Fix quantities, prices, or customer details below. Stock counts are not re-adjusted automatically when you change a quantity here — check Stock afterwards if needed.</div>'+
+        '<div style="max-height:38vh;overflow-y:auto;">'+
+          (lines || '<div class="empty-note">No line items left.</div>')+
+        '</div>'+
+        '<div class="form-row" style="margin-top:10px;">'+
+          '<div class="field"><label>Discount ('+state.shop.currency+' amount)</label><input id="e-discount" type="number" min="0" step="0.01" inputmode="decimal" value="'+f.discount+'"></div>'+
+        '</div>'+
+        '<div style="display:flex;gap:10px;margin-top:16px;">'+
+          '<button class="btn btn-ghost" id="e-cancel" style="flex:1;">Cancel</button>'+
+          '<button class="btn btn-primary" id="e-save" style="flex:2;font-size:15px;">Save Changes</button>'+
+        '</div>'+
       '</div>'+
     '</div>';
   }
@@ -3696,8 +3773,24 @@
         render();
       });
     });
-    document.querySelectorAll('[data-cancel-pay]').forEach(function(btn){
-      btn.addEventListener('click', function(){ state.payFormOpenId = null; render(); });
+    function closePayModal(){ state.payFormOpenId = null; render(); }
+    var payCancel = document.getElementById('pay-cancel');
+    if(payCancel) payCancel.addEventListener('click', closePayModal);
+    var payClose = document.getElementById('pay-close');
+    if(payClose) payClose.addEventListener('click', closePayModal);
+    var payBg = document.getElementById('pay-modal-bg');
+    if(payBg) payBg.addEventListener('click', function(e){ if(e.target===payBg) closePayModal(); });
+    document.querySelectorAll('[data-pay-quick]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-pay-quick-id');
+        var input = document.getElementById('pay-amt-'+id);
+        if(!input) return;
+        var bill = state.bills.find(function(b){ return b.id===id; });
+        if(!bill) return;
+        var bal = billBalance(bill);
+        input.value = btn.getAttribute('data-pay-quick')==='full' ? bal : Math.round((bal/2)*100)/100;
+        input.focus();
+      });
     });
     document.querySelectorAll('[data-record-pay]').forEach(function(btn){
       btn.addEventListener('click', async function(){
@@ -3712,12 +3805,17 @@
         bill.payments = bill.payments || [];
         var newPayment = {id:uid('pay'), dateISO:new Date().toISOString(), amount:amount, note:'Payment received', receivedBy: state.currentUser.name};
         bill.payments.push(newPayment);
+        var printingNow = printingEnabled();
+        if(printingNow){
+          btn.disabled = true;
+          btn.textContent = 'Printing…';
+        }
         await persist('bills');
         state.payFormOpenId = null;
         state.lastPayment = {billId: bill.id, paymentId: newPayment.id};
         state.showPaymentReceipt = true;
         render();
-        if(printingEnabled()){
+        if(printingNow){
           var ctx = findPaymentContext(bill.id, newPayment.id);
           if(state.printer.connected){
             await printPaymentReceiptToBluetooth(ctx);
@@ -3734,6 +3832,46 @@
         var parts = btn.getAttribute('data-print-payment').split('|');
         state.lastPayment = {billId: parts[0], paymentId: parts[1]};
         state.showPaymentReceipt = true;
+        render();
+      });
+    });
+
+    // Return payment — reverses the collection (restores the balance due on the bill).
+    // Use when the shop has physically returned the money to the customer.
+    document.querySelectorAll('[data-return-payment]').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        var parts = btn.getAttribute('data-return-payment').split('|');
+        var billId = parts[0], payId = parts[1];
+        var bill = state.bills.find(function(b){ return b.id===billId; });
+        if(!bill) return;
+        var payment = (bill.payments||[]).find(function(p){ return p.id===payId; });
+        if(!payment) return;
+        if(!confirm('Return payment of '+money(payment.amount)+' on bill '+bill.no+'?\n\nThis restores the balance due on the bill. Use this when money has been physically returned to the customer.')) return;
+        bill.payments = (bill.payments||[]).filter(function(p){ return p.id!==payId; });
+        state.busyMsg = 'Returning payment…';
+        render();
+        await persist('bills');
+        state.busyMsg = '';
+        render();
+      });
+    });
+
+    // Delete payment — removes a payment recorded in error. Does not imply money
+    // was physically returned; use only when the record itself is a mistake.
+    document.querySelectorAll('[data-delete-payment]').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        var parts = btn.getAttribute('data-delete-payment').split('|');
+        var billId = parts[0], payId = parts[1];
+        var bill = state.bills.find(function(b){ return b.id===billId; });
+        if(!bill) return;
+        var payment = (bill.payments||[]).find(function(p){ return p.id===payId; });
+        if(!payment) return;
+        if(!confirm('Delete payment of '+money(payment.amount)+' from bill '+bill.no+'?\n\nUse only if this was recorded in error. This cannot be undone.')) return;
+        bill.payments = (bill.payments||[]).filter(function(p){ return p.id!==payId; });
+        state.busyMsg = 'Deleting payment…';
+        render();
+        await persist('bills');
+        state.busyMsg = '';
         render();
       });
     });
@@ -3786,8 +3924,36 @@
     var retReasonEl = document.getElementById('ret-reason');
     if(retReasonEl) retReasonEl.addEventListener('input', function(){ state.returnForm.reason = retReasonEl.value; });
 
+    document.querySelectorAll('[data-rdec]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var idx = btn.getAttribute('data-rdec');
+        var inp = document.querySelector('[data-ridx="'+idx+'"]');
+        if(!inp) return;
+        var next = Math.max(0, (parseInt(inp.value,10)||0) - 1);
+        inp.value = next;
+        captureReturnFields();
+      });
+    });
+    document.querySelectorAll('[data-rinc]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var idx = btn.getAttribute('data-rinc');
+        var inp = document.querySelector('[data-ridx="'+idx+'"]');
+        if(!inp) return;
+        var max = parseInt(inp.getAttribute('max'),10);
+        var next = (parseInt(inp.value,10)||0) + 1;
+        if(!isNaN(max)) next = Math.min(max, next);
+        inp.value = next;
+        captureReturnFields();
+      });
+    });
+
+    function closeReturnModal(){ state.returnForm=null; render(); }
     var retCancel = document.getElementById('ret-cancel');
-    if(retCancel) retCancel.addEventListener('click', function(){ state.returnForm=null; render(); });
+    if(retCancel) retCancel.addEventListener('click', closeReturnModal);
+    var retClose = document.getElementById('ret-close');
+    if(retClose) retClose.addEventListener('click', closeReturnModal);
+    var retBg = document.getElementById('return-modal-bg');
+    if(retBg) retBg.addEventListener('click', function(e){ if(e.target===retBg) closeReturnModal(); });
 
     var retSave = document.getElementById('ret-save');
     if(retSave) retSave.addEventListener('click', async function(){
@@ -3841,6 +4007,8 @@
       });
 
       state.returnForm = null;
+      retSave.disabled = true;
+      retSave.textContent = 'Returning…';
       await Promise.all([persist('bills'), persist('items'), persist('returns')]);
       render();
     });
@@ -3886,12 +4054,19 @@
       bill.customerPhone = f.customerPhone.trim();
       bill.customerAddress = f.customerAddress.trim();
       if(bill.payment==='account') bill.customer = bill.customerName;
+      eSave.disabled = true;
+      eSave.textContent = 'Saving…';
       await persist('bills');
       state.billEditForm = null;
       render();
     });
+    function closeEditModal(){ state.billEditForm=null; render(); }
     var eCancel = document.getElementById('e-cancel');
-    if(eCancel) eCancel.addEventListener('click', function(){ state.billEditForm=null; render(); });
+    if(eCancel) eCancel.addEventListener('click', closeEditModal);
+    var eClose = document.getElementById('e-close');
+    if(eClose) eClose.addEventListener('click', closeEditModal);
+    var eBg = document.getElementById('edit-modal-bg');
+    if(eBg) eBg.addEventListener('click', function(e){ if(e.target===eBg) closeEditModal(); });
   }
 
   // ---------------- CUSTOMERS ----------------
@@ -3941,6 +4116,7 @@
           (bal>0.004 ? '<div class="sum-row" style="font-size:12px;"><span>Balance due</span><span class="val" style="color:var(--red);font-weight:700;">'+money(bal)+'</span></div>' : '')+
           '<div class="acct-row-actions" style="margin-top:6px;">'+
             (printingEnabled() ? '<button class="btn btn-ghost btn-sm" data-print-bill="'+b.id+'">Print / Reprint</button>' : '')+
+            '<button class="btn btn-ghost btn-sm" data-view-bill="'+b.id+'">View as photo</button>'+
             '<button class="btn btn-ghost btn-sm" data-share-bill="'+b.id+'">Share as photo</button>'+
             deleteBillButtonHtml(b)+
           '</div>'+
@@ -4061,59 +4237,139 @@
     var stockSelDate = state.stockSelectedDate || todayISO();
     var stockSelDateLabel = new Date(stockSelDate+'T00:00:00').toLocaleDateString(undefined,{weekday:'short', year:'numeric', month:'short', day:'numeric'});
     var openCloseRows = stockOpenCloseByDate(stockSelDate);
-    var openCloseHtml = openCloseRows.length ? '<table><thead><tr><th>Item</th><th>Category</th><th>Opening Stock</th><th>In</th><th>Out</th><th>Closing Stock</th></tr></thead><tbody>'+
+    var openCloseHtml = openCloseRows.length ? '<table class="stock-table"><thead><tr><th>Item</th><th>Category</th><th>Opening Stock</th><th>In</th><th>Out</th><th>Closing Stock</th></tr></thead><tbody>'+
       openCloseRows.map(function(r){
-        return '<tr><td>'+escapeHtml(r.name)+'</td><td>'+escapeHtml(r.category)+'</td>'+
-          '<td class="num">'+r.opening+'</td>'+
-          '<td class="num" style="color:var(--green);">'+(r.inQty>0?'+'+r.inQty:r.inQty)+'</td>'+
-          '<td class="num" style="color:var(--red);">'+(r.outQty>0?'-'+r.outQty:r.outQty)+'</td>'+
-          '<td class="num" style="font-weight:700;">'+r.closing+'</td></tr>';
+        return '<tr><td data-label="Item">'+escapeHtml(r.name)+'</td><td data-label="Category">'+escapeHtml(r.category)+'</td>'+
+          '<td class="num" data-label="Opening Stock">'+r.opening+'</td>'+
+          '<td class="num" data-label="In" style="color:var(--green);">'+(r.inQty>0?'+'+r.inQty:r.inQty)+'</td>'+
+          '<td class="num" data-label="Out" style="color:var(--red);">'+(r.outQty>0?'-'+r.outQty:r.outQty)+'</td>'+
+          '<td class="num" data-label="Closing Stock" style="font-weight:700;">'+r.closing+'</td></tr>';
       }).join('')+'</tbody></table>' : '<div class="empty-note">No items yet.</div>';
 
     var rows = state.items.map(function(it){
       var low = it.stock<=5;
       var lastCost = itemLastPurchasePrice(it);
-      return '<tr><td>'+escapeHtml(it.name)+'</td><td>'+escapeHtml(it.category||'')+'</td><td class="num">'+money(it.price)+'</td>'+
-        '<td class="num">'+(lastCost!=null?money(lastCost):'—')+'</td>'+
-        '<td class="num" style="'+(low?'color:var(--red);font-weight:700;':'')+'">'+it.stock+'</td>'+
-        '<td style="white-space:nowrap;"><button class="btn btn-ghost btn-sm" data-restock="'+it.id+'">+ Restock</button> '+
+      return '<tr><td data-label="Item">'+escapeHtml(it.name)+'</td><td data-label="Category">'+escapeHtml(it.category||'')+'</td><td class="num" data-label="Selling Price">'+money(it.price)+'</td>'+
+        '<td class="num" data-label="Last Purchase Price">'+(lastCost!=null?money(lastCost):'—')+'</td>'+
+        '<td class="num" data-label="Stock" style="'+(low?'color:var(--red);font-weight:700;':'')+'">'+it.stock+'</td>'+
+        '<td class="stock-actions" style="white-space:nowrap;"><button class="btn btn-ghost btn-sm" data-restock="'+it.id+'">+ Restock</button> '+
         (it.stock>0 ? '<button class="btn btn-ghost btn-sm" data-stock-return="'+it.id+'" title="Remove stock — damaged, expired, or returned to supplier">Return Stock</button>' : '')+
         '</td>'+
       '</tr>';
     }).join('');
     var lowCount = state.items.filter(function(i){ return i.stock<=5; }).length;
 
-    var formHtml = '';
+    // Restock modal popup
+    var restockModalHtml = '';
     var rf = state.restockForm;
     if(rf){
       var item = state.items.find(function(i){ return i.id===rf.itemId; });
       if(item){
-        formHtml = '<div class="card" style="margin-top:14px;">'+
-          '<div class="section-head"><h3>Restock: '+escapeHtml(item.name)+'</h3></div>'+
-          '<div class="form-row">'+
-            '<div class="field"><label>Quantity to add</label><input id="rs-qty" type="number" min="1" inputmode="numeric" value="'+rf.qty+'"></div>'+
-            '<div class="field"><label>Purchase price / unit ('+state.shop.currency+')</label><input id="rs-price" type="number" min="0" step="0.01" inputmode="decimal" value="'+rf.purchasePrice+'"></div>'+
-          '</div>'+
-          '<div class="note-box">Selling price stays '+money(item.price)+' for every unit of this item. This purchase price only applies to this new batch of stock — stock already on the shelf keeps whatever it originally cost.</div>'+
-          '<div style="display:flex;gap:8px;"><button class="btn btn-primary" id="rs-save">Add stock</button><button class="btn btn-ghost" id="rs-cancel">Cancel</button></div>'+
-        '</div>';
+        var lastCostVal = rf.purchasePrice;
+        var margin = lastCostVal>0 ? Math.round(((item.price-lastCostVal)/item.price)*100) : null;
+        restockModalHtml =
+          '<div class="modal-bg" id="restock-modal-bg">'+
+            '<div class="modal-box" style="max-width:400px;">'+
+              '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">'+
+                '<div>'+
+                  '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);font-weight:600;margin-bottom:2px;">Restock Item</div>'+
+                  '<div style="font-size:19px;font-weight:800;color:var(--ink);">'+escapeHtml(item.name)+'</div>'+
+                  (item.category ? '<div style="font-size:12px;color:var(--text-dim);">'+escapeHtml(item.category)+'</div>' : '')+
+                '</div>'+
+                '<button id="rs-cancel" style="background:var(--paper-dark);border:none;border-radius:50%;width:34px;height:34px;font-size:18px;line-height:1;cursor:pointer;color:var(--text-dim);" title="Close">&times;</button>'+
+              '</div>'+
+
+              '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--paper);border-radius:var(--radius-sm);padding:12px;margin-bottom:18px;">'+
+                '<div style="text-align:center;">'+
+                  '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);margin-bottom:2px;">Current Stock</div>'+
+                  '<div style="font-size:22px;font-weight:800;color:var(--ink);">'+item.stock+'</div>'+
+                '</div>'+
+                '<div style="text-align:center;">'+
+                  '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);margin-bottom:2px;">Selling Price</div>'+
+                  '<div style="font-size:22px;font-weight:800;color:var(--green);">'+money(item.price)+'</div>'+
+                '</div>'+
+              '</div>'+
+
+              '<div class="field">'+
+                '<label style="font-size:13px;font-weight:700;color:var(--ink);">&#128230; Quantity to Add</label>'+
+                '<div style="display:flex;align-items:center;gap:8px;margin-top:4px;">'+
+                  '<button id="rs-qty-dec" style="width:40px;height:48px;border:1.5px solid var(--line);border-radius:var(--radius-sm);background:var(--paper);font-size:22px;font-weight:700;cursor:pointer;flex-shrink:0;color:var(--ink);">−</button>'+
+                  '<input id="rs-qty" type="number" min="1" inputmode="numeric" value="'+rf.qty+'" style="flex:1;text-align:center;font-size:24px;font-weight:800;font-family:inherit;height:48px;border:1.5px solid var(--green);border-radius:var(--radius-sm);color:var(--ink);background:var(--white);">'+
+                  '<button id="rs-qty-inc" style="width:40px;height:48px;border:1.5px solid var(--line);border-radius:var(--radius-sm);background:var(--paper);font-size:22px;font-weight:700;cursor:pointer;flex-shrink:0;color:var(--ink);">+</button>'+
+                '</div>'+
+                '<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">'+
+                  [5,10,20,50,100].map(function(q){ return '<button class="btn btn-ghost btn-sm rs-qty-preset" data-preset-qty="'+q+'" style="flex:1;min-width:40px;">'+q+'</button>'; }).join('')+
+                '</div>'+
+              '</div>'+
+
+              '<div class="field" style="margin-top:14px;">'+
+                '<label style="font-size:13px;font-weight:700;color:var(--ink);">&#128176; Purchase Price / Unit ('+state.shop.currency+')</label>'+
+                '<input id="rs-price" type="number" min="0" step="0.01" inputmode="decimal" value="'+rf.purchasePrice+'" placeholder="0.00" style="margin-top:4px;font-size:18px;font-weight:700;font-family:inherit;height:48px;text-align:center;border:1.5px solid var(--line);border-radius:var(--radius-sm);width:100%;color:var(--ink);background:var(--white);">'+
+                (margin!==null ? '<div id="rs-margin-label" style="font-size:12px;color:var(--text-dim);margin-top:5px;text-align:center;">Margin: <b style="color:var(--green);">'+margin+'%</b> &nbsp;|&nbsp; Profit/unit: <b>'+money(item.price-lastCostVal)+'</b></div>' : '<div id="rs-margin-label" style="font-size:12px;color:var(--text-dim);margin-top:5px;text-align:center;">Enter purchase price to see margin</div>')+
+              '</div>'+
+
+              '<div id="rs-preview-box" style="margin-top:14px;background:linear-gradient(135deg,rgba(183,28,28,.08),rgba(183,28,28,.03));border:1.5px solid var(--green);border-radius:var(--radius-sm);padding:12px;">'+
+                '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--green);font-weight:700;margin-bottom:8px;">After Restock</div>'+
+                '<div style="display:flex;justify-content:space-between;align-items:center;">'+
+                  '<span style="font-size:13px;color:var(--text-dim);">New stock total</span>'+
+                  '<span id="rs-new-stock" style="font-size:20px;font-weight:800;color:var(--ink);">'+(item.stock+rf.qty)+'</span>'+
+                '</div>'+
+                '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">'+
+                  '<span style="font-size:13px;color:var(--text-dim);">Total purchase cost</span>'+
+                  '<span id="rs-total-cost" style="font-size:16px;font-weight:700;color:var(--amber);">'+money(rf.qty*rf.purchasePrice)+'</span>'+
+                '</div>'+
+              '</div>'+
+
+              '<div class="note-box" style="margin-top:12px;font-size:12px;">Selling price stays <b>'+money(item.price)+'</b> per unit. Purchase price applies to this batch only.</div>'+
+
+              '<div style="display:flex;gap:10px;margin-top:16px;">'+
+                '<button class="btn btn-ghost" id="rs-cancel2" style="flex:1;">Cancel</button>'+
+                '<button class="btn btn-primary" id="rs-save" style="flex:2;font-size:15px;">&#10003; Add Stock</button>'+
+              '</div>'+
+            '</div>'+
+          '</div>';
       }
     }
 
-    var stockReturnFormHtml = '';
+    // Stock Return modal popup
+    var stockReturnModalHtml = '';
     var srf = state.stockReturnForm;
     if(srf){
       var sitem = state.items.find(function(i){ return i.id===srf.itemId; });
       if(sitem){
-        stockReturnFormHtml = '<div class="card" style="margin-top:14px;background:var(--paper);">'+
-          '<div class="section-head"><h3>Return Stock: '+escapeHtml(sitem.name)+'</h3></div>'+
-          '<div class="note-box">Use this to take stock back off the shelf — damaged, expired, or sent back to a supplier. This is not tied to any customer bill.</div>'+
-          '<div class="form-row">'+
-            '<div class="field"><label>Quantity to remove (currently '+sitem.stock+' in stock)</label><input id="sr-qty" type="number" min="1" max="'+sitem.stock+'" inputmode="numeric" value="'+srf.qty+'"></div>'+
-          '</div>'+
-          '<div class="field"><label>Reason (optional)</label><input id="sr-reason" placeholder="e.g. damaged, expired, sent back to supplier" value="'+escapeHtml(srf.reason||'')+'"></div>'+
-          '<div style="display:flex;gap:8px;"><button class="btn btn-primary" id="sr-save">Confirm Stock Return</button><button class="btn btn-ghost" id="sr-cancel">Cancel</button></div>'+
-        '</div>';
+        stockReturnModalHtml =
+          '<div class="modal-bg" id="stock-return-modal-bg">'+
+            '<div class="modal-box" style="max-width:380px;">'+
+              '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">'+
+                '<div>'+
+                  '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--red);font-weight:600;margin-bottom:2px;">Remove Stock</div>'+
+                  '<div style="font-size:19px;font-weight:800;color:var(--ink);">'+escapeHtml(sitem.name)+'</div>'+
+                '</div>'+
+                '<button id="sr-cancel" style="background:var(--paper-dark);border:none;border-radius:50%;width:34px;height:34px;font-size:18px;line-height:1;cursor:pointer;color:var(--text-dim);" title="Close">&times;</button>'+
+              '</div>'+
+              '<div style="text-align:center;background:var(--paper);border-radius:var(--radius-sm);padding:12px;margin-bottom:18px;">'+
+                '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);margin-bottom:2px;">Current Stock</div>'+
+                '<div style="font-size:26px;font-weight:800;color:var(--ink);">'+sitem.stock+'</div>'+
+              '</div>'+
+              '<div class="note-box" style="margin-bottom:14px;">Use this to remove stock — damaged, expired, or returned to supplier. Not tied to any customer bill.</div>'+
+              '<div class="field">'+
+                '<label style="font-size:13px;font-weight:700;color:var(--ink);">Quantity to Remove</label>'+
+                '<div style="display:flex;align-items:center;gap:8px;margin-top:4px;">'+
+                  '<button id="sr-qty-dec" style="width:40px;height:48px;border:1.5px solid var(--line);border-radius:var(--radius-sm);background:var(--paper);font-size:22px;font-weight:700;cursor:pointer;flex-shrink:0;color:var(--ink);">−</button>'+
+                  '<input id="sr-qty" type="number" min="1" max="'+sitem.stock+'" inputmode="numeric" value="'+srf.qty+'" style="flex:1;text-align:center;font-size:24px;font-weight:800;font-family:inherit;height:48px;border:1.5px solid var(--red);border-radius:var(--radius-sm);color:var(--ink);background:var(--white);">'+
+                  '<button id="sr-qty-inc" style="width:40px;height:48px;border:1.5px solid var(--line);border-radius:var(--radius-sm);background:var(--paper);font-size:22px;font-weight:700;cursor:pointer;flex-shrink:0;color:var(--ink);">+</button>'+
+                '</div>'+
+              '</div>'+
+              '<div class="field" style="margin-top:14px;">'+
+                '<label style="font-size:13px;font-weight:700;color:var(--ink);">Reason (optional)</label>'+
+                '<input id="sr-reason" placeholder="e.g. damaged, expired, returned to supplier" value="'+escapeHtml(srf.reason||'')+'" style="margin-top:4px;width:100%;height:44px;border:1.5px solid var(--line);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;padding:0 12px;">'+
+              '</div>'+
+              '<div style="display:flex;gap:10px;margin-top:20px;">'+
+                '<button class="btn btn-ghost" id="sr-cancel2" style="flex:1;">Cancel</button>'+
+                '<button class="btn btn-danger" id="sr-save" style="flex:2;font-size:15px;">Remove Stock</button>'+
+              '</div>'+
+            '</div>'+
+          '</div>';
       }
     }
 
@@ -4134,9 +4390,9 @@
       '<div class="note-box">Opening stock = stock on hand at the start of the selected day. Closing stock = stock on hand at the end of that day (opening + In − Out).</div>'+
       openCloseHtml+
     '</div>'+
-    '<div class="card"><table><thead><tr><th>Item</th><th>Category</th><th>Selling Price</th><th>Last Purchase Price</th><th>Stock</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
-    formHtml+
-    stockReturnFormHtml;
+    '<div class="card"><table class="stock-table"><thead><tr><th>Item</th><th>Category</th><th>Selling Price</th><th>Last Purchase Price</th><th>Stock</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    restockModalHtml+
+    stockReturnModalHtml;
   }
 
   function bindStockEvents(){
@@ -4161,6 +4417,7 @@
         render();
       });
     });
+    // ---- Restock modal bindings ----
     var rsSave = document.getElementById('rs-save');
     if(rsSave) rsSave.addEventListener('click', async function(){
       var rf = state.restockForm;
@@ -4171,8 +4428,6 @@
       var price = parseFloat(document.getElementById('rs-price').value)||0;
       if(qty<=0){ alert('Enter a valid quantity to add.'); return; }
       ensureItemBatches(item);
-      // Pushed as a brand-new batch — every earlier batch (and its
-      // purchase price) is left exactly as it was.
       item.batches.push({id:uid('b'), qty:qty, purchasePrice:price, dateISO:new Date().toISOString()});
       item.stock += qty;
       item.purchasePrice = price;
@@ -4183,9 +4438,58 @@
       state.busyMsg = '';
       render();
     });
+    function closeRestockModal(){ state.restockForm=null; render(); }
     var rsCancel = document.getElementById('rs-cancel');
-    if(rsCancel) rsCancel.addEventListener('click', function(){ state.restockForm=null; render(); });
+    if(rsCancel) rsCancel.addEventListener('click', closeRestockModal);
+    var rsCancel2 = document.getElementById('rs-cancel2');
+    if(rsCancel2) rsCancel2.addEventListener('click', closeRestockModal);
+    var rsBg = document.getElementById('restock-modal-bg');
+    if(rsBg) rsBg.addEventListener('click', function(e){ if(e.target===rsBg) closeRestockModal(); });
 
+    // Qty stepper buttons
+    var rsQtyInp = document.getElementById('rs-qty');
+    var rsQtyDec = document.getElementById('rs-qty-dec');
+    var rsQtyInc = document.getElementById('rs-qty-inc');
+    function updateRestockPreview(){
+      if(!rsQtyInp) return;
+      var q = Math.max(1, parseInt(rsQtyInp.value,10)||1);
+      var rf = state.restockForm;
+      if(!rf) return;
+      var item = state.items.find(function(i){ return i.id===rf.itemId; });
+      if(!item) return;
+      var price = parseFloat(document.getElementById('rs-price').value)||0;
+      var newStock = document.getElementById('rs-new-stock');
+      var totalCost = document.getElementById('rs-total-cost');
+      var marginLabel = document.getElementById('rs-margin-label');
+      if(newStock) newStock.textContent = item.stock + q;
+      if(totalCost) totalCost.textContent = money(q * price);
+      if(marginLabel){
+        if(price>0 && item.price>0){
+          var m = Math.round(((item.price-price)/item.price)*100);
+          marginLabel.innerHTML = 'Margin: <b style="color:var(--green);">'+m+'%</b> &nbsp;|&nbsp; Profit/unit: <b>'+money(item.price-price)+'</b>';
+        } else {
+          marginLabel.textContent = 'Enter purchase price to see margin';
+        }
+      }
+    }
+    if(rsQtyDec) rsQtyDec.addEventListener('click', function(){
+      var v = Math.max(1,(parseInt(rsQtyInp.value,10)||1)-1);
+      rsQtyInp.value=v; updateRestockPreview();
+    });
+    if(rsQtyInc) rsQtyInc.addEventListener('click', function(){
+      rsQtyInp.value=(parseInt(rsQtyInp.value,10)||1)+1; updateRestockPreview();
+    });
+    if(rsQtyInp) rsQtyInp.addEventListener('input', updateRestockPreview);
+    document.querySelectorAll('.rs-qty-preset').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if(rsQtyInp) rsQtyInp.value = btn.getAttribute('data-preset-qty');
+        updateRestockPreview();
+      });
+    });
+    var rsPriceInp = document.getElementById('rs-price');
+    if(rsPriceInp) rsPriceInp.addEventListener('input', updateRestockPreview);
+
+    // ---- Stock Return modal bindings ----
     document.querySelectorAll('[data-stock-return]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var id = btn.getAttribute('data-stock-return');
@@ -4208,8 +4512,6 @@
       if(qty<=0){ alert('Enter a valid quantity to remove.'); return; }
       if(qty>item.stock){ alert('Only '+item.stock+' in stock — cannot remove more than that.'); return; }
       if(!confirm('Remove '+qty+' unit(s) of '+item.name+' from stock? This cannot be undone.')) return;
-      // Reuses the same FIFO batch consumption as a sale, so purchase-price
-      // batches (and therefore profit reporting) stay accurate.
       var cost = consumeStockFIFO(item, qty);
       state.returns = state.returns || [];
       state.returns.push({
@@ -4223,8 +4525,28 @@
       await Promise.all([persist('items'), persist('returns')]);
       render();
     });
+    function closeStockReturnModal(){ state.stockReturnForm=null; render(); }
     var srCancel = document.getElementById('sr-cancel');
-    if(srCancel) srCancel.addEventListener('click', function(){ state.stockReturnForm=null; render(); });
+    if(srCancel) srCancel.addEventListener('click', closeStockReturnModal);
+    var srCancel2 = document.getElementById('sr-cancel2');
+    if(srCancel2) srCancel2.addEventListener('click', closeStockReturnModal);
+    var srBg = document.getElementById('stock-return-modal-bg');
+    if(srBg) srBg.addEventListener('click', function(e){ if(e.target===srBg) closeStockReturnModal(); });
+
+    // Stock return qty steppers
+    var srQtyInp = document.getElementById('sr-qty');
+    var srQtyDec = document.getElementById('sr-qty-dec');
+    var srQtyInc = document.getElementById('sr-qty-inc');
+    if(srQtyDec) srQtyDec.addEventListener('click', function(){
+      var v = Math.max(1,(parseInt(srQtyInp.value,10)||1)-1);
+      srQtyInp.value=v;
+    });
+    if(srQtyInc) srQtyInc.addEventListener('click', function(){
+      var srf2 = state.stockReturnForm;
+      var sitem2 = srf2 ? state.items.find(function(i){ return i.id===srf2.itemId; }) : null;
+      var max = sitem2 ? sitem2.stock : 9999;
+      srQtyInp.value = Math.min(max, (parseInt(srQtyInp.value,10)||1)+1);
+    });
   }
 
   // ---------------- REPORTS ----------------
@@ -4337,101 +4659,118 @@
   function billActionButtonsHtml(b){
     return '<div class="acct-row-actions">'+
       (printingEnabled() ? '<button class="btn btn-ghost btn-sm" data-print-bill="'+b.id+'">Print / Reprint</button>' : '')+
+      '<button class="btn btn-ghost btn-sm" data-view-bill="'+b.id+'">View as photo</button>'+
       '<button class="btn btn-ghost btn-sm" data-share-bill="'+b.id+'">Share as photo</button>'+
       deleteBillButtonHtml(b)+
     '</div>';
   }
 
-  // ---------------- MONTHLY / PERIOD STATEMENT (PDF) ----------------
-  // Shared data-gathering for the professional Monthly Report statement —
-  // works for either a whole calendar month or a custom from/to range, so
-  // the "This month" quick pick and the "date to date" custom search
-  // produce the exact same shape of report and never drift apart.
-  function periodReportData(from, to, label){
-    var bills = state.bills.filter(function(b){
-      var day = localDay(b.dateISO);
-      if(from && day<from) return false;
-      if(to && day>to) return false;
-      return true;
-    });
-    var cashBillAmt=0, chequeAmt=0, creditSalesTotal=0, creditBalanceTotal=0;
-    bills.forEach(function(b){
-      if(b.payment==='cash') cashBillAmt += (b.total||0);
-      else if(b.payment==='cheque') chequeAmt += (b.total||0);
-      else if(b.payment==='account'){ creditSalesTotal += (b.total||0); creditBalanceTotal += billBalance(b); }
-    });
-    // Payments received in this period against account bills (any bill,
-    // not just ones raised in-period) count toward cash collected.
-    var acctPaidNow=0, acctReceivePayment=0;
-    state.bills.forEach(function(b){
-      if(b.payment!=='account') return;
-      (b.payments||[]).forEach(function(p){
-        var day = localDay(p.dateISO);
-        if(from && day<from) return;
-        if(to && day>to) return;
-        if(p.note==='Payment at time of sale') acctPaidNow += (p.amount||0);
-        else acctReceivePayment += (p.amount||0);
-      });
-    });
-    var cashSalesTotal = cashBillAmt + acctPaidNow + acctReceivePayment;
+  // ---- PENDING CREDIT BILLS (All-time outstanding account bills) ----
+  function pendingCreditBillsCardHtml(){
+    // All account bills with a remaining balance > 0
+    var pendingBills = state.bills.filter(function(b){
+      return b.payment==='account' && billBalance(b) > 0.004;
+    }).slice().sort(function(a,b){ return new Date(a.dateISO)-new Date(b.dateISO); }); // oldest first
 
-    var byDay = groupBillsByDay(bills);
+    var totalPending = pendingBills.reduce(function(s,b){ return s+billBalance(b); },0);
+    var totalPendingBillCount = pendingBills.length;
 
-    // Customer balance-due details, scoped to account bills raised in this period.
+    // Group by customer
     var custMap = {};
-    bills.forEach(function(b){
-      if(b.payment!=='account') return;
-      var key = (b.customerName||'(no name given)').toLowerCase()+'|'+(b.customerPhone||'');
-      if(!custMap[key]) custMap[key] = {name:b.customerName||'(no name given)', phone:b.customerPhone||'', bills:0, sales:0, received:0, balance:0};
-      var c = custMap[key];
-      c.bills += 1;
-      c.sales += (b.total||0);
-      c.received += billPaidTotal(b);
-      c.balance += billBalance(b);
+    pendingBills.forEach(function(b){
+      var key = (b.customerName||'(No Name)').toLowerCase();
+      if(!custMap[key]) custMap[key] = {
+        name: b.customerName||'(No Name)',
+        phone: b.customerPhone||'',
+        bills: [],
+        totalOwed: 0
+      };
+      custMap[key].bills.push(b);
+      custMap[key].totalOwed += billBalance(b);
+      if(!custMap[key].phone && b.customerPhone) custMap[key].phone = b.customerPhone;
     });
-    var customerRows = Object.keys(custMap).map(function(k){ return custMap[k]; }).sort(function(a,b){ return b.balance-a.balance; });
-    var customerBalanceTotal = customerRows.reduce(function(s,c){ return s+c.balance; },0);
+    var custList = Object.keys(custMap).map(function(k){ return custMap[k]; })
+      .sort(function(a,b){ return b.totalOwed - a.totalOwed; }); // highest owed first
 
-    return {
-      from: from, to: to, label: label,
-      bills: bills,
-      cashBillAmt: cashBillAmt, acctPaidNow: acctPaidNow, acctReceivePayment: acctReceivePayment, cashSalesTotal: cashSalesTotal,
-      chequeSalesTotal: chequeAmt,
-      creditSalesTotal: creditSalesTotal, creditBalanceTotal: creditBalanceTotal,
-      byDay: byDay,
-      customerRows: customerRows, customerBalanceTotal: customerBalanceTotal,
-      totalBills: bills.length,
-      totalItems: bills.reduce(function(s,b){ return s+billItemCount(b); },0),
-      grandTotal: bills.reduce(function(s,b){ return s+(b.total||0); },0)
-    };
-  }
-
-  function monthlyReportData(monthStr){
-    monthStr = monthStr || monthKey(new Date().toISOString());
-    var d = new Date(monthStr+'-01T00:00:00');
-    var first = monthStr+'-01';
-    var lastDate = new Date(d.getFullYear(), d.getMonth()+1, 0);
-    var last = lastDate.getFullYear()+'-'+String(lastDate.getMonth()+1).padStart(2,'0')+'-'+String(lastDate.getDate()).padStart(2,'0');
-    var label = d.toLocaleDateString(undefined,{year:'numeric', month:'long'});
-    return periodReportData(first, last, label);
-  }
-
-  // Builds the report from whichever of the two selectors on the Reports
-  // page currently has a value: an explicit custom range wins over the
-  // month picker (so setting a From/To always takes priority), otherwise
-  // falls back to the selected calendar month.
-  function currentMonthlyReportData(){
-    if(state.mrFrom || state.mrTo){
-      var rangeLabel = (state.mrFrom||'…')+' \u2192 '+(state.mrTo||'…');
-      return monthlyReportDataFromRange(state.mrFrom, state.mrTo, rangeLabel);
+    if(!custList.length){
+      return '<div class="card" style="margin-bottom:18px;border:1.5px solid var(--green);background:linear-gradient(180deg,rgba(183,28,28,.05),rgba(183,28,28,0) 40%);">'+
+        '<div class="section-head"><h3 style="color:var(--green);">&#10003; Pending Credit Bills &mdash; All Outstanding</h3></div>'+
+        '<div class="empty-note" style="color:var(--green);font-weight:600;">&#127881; No pending credit balances &mdash; all account bills are fully settled!</div>'+
+      '</div>';
     }
-    return monthlyReportData(state.mrMonth);
-  }
-  function monthlyReportDataFromRange(from, to, label){
-    return periodReportData(from, to, label);
+
+    var custRowsHtml = custList.map(function(c){
+      var custKey = 'pend-cust-'+c.name.toLowerCase().replace(/\s+/g,'_');
+      var isOpen = state.pendingCreditExpandedCust === custKey;
+      var billRowsHtml = c.bills.map(function(b){
+        var bal = billBalance(b);
+        var paid = billPaidTotal(b);
+        var age = Math.floor((Date.now()-new Date(b.dateISO))/86400000);
+        var ageLabel = age===0 ? 'Today' : age===1 ? '1 day ago' : age+' days ago';
+        var ageColor = age>30 ? 'color:var(--red);font-weight:700;' : age>7 ? 'color:var(--amber);' : 'color:var(--text-dim);';
+        return '<tr>'+
+          '<td><b>'+escapeHtml(b.no)+'</b></td>'+
+          '<td>'+new Date(b.dateISO).toLocaleDateString()+'<br><span style="font-size:10.5px;'+ageColor+'">'+ageLabel+'</span></td>'+
+          '<td class="num">'+money(b.total)+'</td>'+
+          '<td class="num" style="color:var(--green);">'+money(paid)+'</td>'+
+          '<td class="num" style="color:var(--red);font-weight:700;">'+money(bal)+'</td>'+
+          '<td>'+billActionButtonsHtml(b)+'</td>'+
+        '</tr>';
+      }).join('');
+
+      return '<div class="card" style="margin-bottom:10px;border-left:4px solid var(--red);">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-bottom:8px;border-bottom:1px dashed var(--line);">'+
+          '<div>'+
+            '<div style="font-weight:800;font-size:15px;color:var(--ink);">'+escapeHtml(c.name)+'</div>'+
+            (c.phone ? '<div style="font-size:12px;color:var(--text-dim);">&#128222; '+escapeHtml(c.phone)+'</div>' : '')+
+            '<div style="font-size:12px;color:var(--text-dim);">'+c.bills.length+' pending bill'+(c.bills.length>1?'s':'')+'</div>'+
+          '</div>'+
+          '<div style="text-align:right;">'+
+            '<div style="font-size:12px;color:var(--text-dim);">Total Owed</div>'+
+            '<div style="font-size:20px;font-weight:800;color:var(--red);">'+money(c.totalOwed)+'</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="acct-row-actions" style="margin-top:8px;">'+
+          '<button class="btn btn-ghost btn-sm" data-toggle-pending-cust="'+custKey+'">'+(isOpen?'&#9650; Hide bills':'&#9660; View bills ('+c.bills.length+')')+'</button>'+
+          (c.phone ? '<a class="btn btn-amber btn-sm" href="tel:'+escapeHtml(c.phone)+'" style="text-decoration:none;display:inline-flex;align-items:center;">&#128222; Call</a>' : '')+
+          (printingEnabled() ? '<button class="btn btn-ghost btn-sm" data-print-statement="'+c.name.toLowerCase()+'">Print Statement</button>' : '')+
+          '<button class="btn btn-ghost btn-sm" data-share-statement="'+c.name.toLowerCase()+'">Share Statement</button>'+
+        '</div>'+
+        (isOpen ?
+          '<div style="margin-top:10px;overflow-x:auto;">'+
+            '<table><thead><tr>'+
+              '<th>Bill #</th><th>Date</th><th>Bill Total</th><th>Paid</th><th>Balance Due</th><th>Actions</th>'+
+            '</tr></thead><tbody>'+billRowsHtml+'</tbody></table>'+
+          '</div>'
+        : '')+
+      '</div>';
+    }).join('');
+
+    return '<div class="card" style="margin-bottom:18px;border:1.5px solid var(--red);background:linear-gradient(180deg,rgba(220,61,61,.06),rgba(220,61,61,0) 40%);box-shadow:0 2px 10px rgba(220,61,61,.12);">'+
+      '<div class="section-head">'+
+        '<h3 style="font-size:17px;font-weight:800;color:var(--red);">&#9888; Pending Credit Bills &mdash; All Outstanding</h3>'+
+      '</div>'+
+      '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;">'+
+        '<div style="background:var(--white);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 16px;flex:1;min-width:120px;text-align:center;">'+
+          '<div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Pending Bills</div>'+
+          '<div style="font-size:22px;font-weight:800;color:var(--ink);">'+totalPendingBillCount+'</div>'+
+        '</div>'+
+        '<div style="background:var(--white);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 16px;flex:1;min-width:120px;text-align:center;">'+
+          '<div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Customers with Balance</div>'+
+          '<div style="font-size:22px;font-weight:800;color:var(--ink);">'+custList.length+'</div>'+
+        '</div>'+
+        '<div style="background:rgba(220,61,61,.08);border:1.5px solid var(--red);border-radius:var(--radius-sm);padding:10px 16px;flex:2;min-width:160px;text-align:center;">'+
+          '<div style="font-size:11px;color:var(--red);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;font-weight:700;">Total Outstanding</div>'+
+          '<div style="font-size:26px;font-weight:800;color:var(--red);">'+money(totalPending)+'</div>'+
+        '</div>'+
+      '</div>'+
+      custRowsHtml+
+    '</div>';
   }
 
   function renderReports(){
+    var mrMode = state.monthlyRepMode || 'month';
+    var mrMonthVal = state.monthlyRepMonth || todayISO().slice(0,7);
     var selDate = state.reportSelectedDate || todayISO();
     var selSummary = selectedDateSummary(selDate);
     var selDateLabel = new Date(selDate+'T00:00:00').toLocaleDateString(undefined,{weekday:'short', year:'numeric', month:'short', day:'numeric'});
@@ -4563,17 +4902,6 @@
       (state.printer.status ? '<div class="printer-status" style="margin-top:10px;"><span class="dot '+(state.printer.connected?'ok':'off')+'"></span><span>'+escapeHtml(state.printer.status)+'</span></div>' : '')+
     '</div>'+
 
-    '<div class="card highlight-amber" style="margin-bottom:18px;">'+
-      '<div class="section-head"><h3>&#128196; Monthly Report &mdash; Statement (PDF)</h3></div>'+
-      '<div class="note-box">Pick a month, or a custom date-to-date range, then generate a professional statement PDF with total cash, cheque and credit sales, sales details, and customers\' balance due for that period.</div>'+
-      '<div class="date-select-bar">'+
-        '<div class="field"><label>Select month</label><input type="month" id="mr-month" value="'+escapeHtml(state.mrMonth)+'"></div>'+
-        '<div class="field"><label>Or from</label><input type="date" id="mr-from" value="'+escapeHtml(state.mrFrom)+'"></div>'+
-        '<div class="field"><label>to</label><input type="date" id="mr-to" value="'+escapeHtml(state.mrTo)+'"></div>'+
-        '<button class="btn btn-primary btn-sm" id="mr-generate" type="button">&#128196; Generate PDF Statement</button>'+
-      '</div>'+
-    '</div>'+
-
     '<div class="banner-grid">'+
       '<div class="banner-card banner-cash"><span class="b-icon">&#128181;</span>'+
         '<div class="b-label">Cash Sales &middot; '+selDateLabel+'</div>'+
@@ -4597,9 +4925,13 @@
     '</div>'+
 
     '<div class="card cash-highlight" style="margin-bottom:18px;">'+
-      '<div class="section-head"><h3>&#128176; Cash on Hand &mdash; Daily Summary</h3></div>'+
-      '<div class="note-box">Cash on hand = cash sales + payments received against account balances, per day. Assumes account payments were collected in cash — see the Bills page to record those payments.</div>'+
-      cashDaysHtml+
+      '<div class="section-head"><h3>&#128176; Cash on Hand &mdash; Daily Summary</h3>'+
+        '<button class="btn btn-ghost btn-sm" id="cash-summary-toggle" type="button">'+(state.cashSummaryCollapsed?'Show &#9662;':'Hide &#9652;')+'</button>'+
+      '</div>'+
+      (state.cashSummaryCollapsed ? '' :
+        '<div class="note-box">Cash on hand = cash sales + payments received against account balances, per day. Assumes account payments were collected in cash — see the Bills page to record those payments.</div>'+
+        cashDaysHtml
+      )+
     '</div>'+
 
     '<div class="card highlight-amber" style="margin-bottom:18px;"><div class="section-head"><h3>&#128202; Sales by day ('+selDateLabel+')'+(state.reportPayment!=='all'?' &middot; '+state.reportPayment:'')+'</h3></div>'+
@@ -4608,6 +4940,26 @@
 
     '<div class="card highlight-ink" style="margin-bottom:18px;"><div class="section-head"><h3>&#128179; Cheque payments &mdash; detail ('+selDateLabel+')</h3></div>'+chequeDetailHtml+'</div>'+
     '<div class="card highlight-red" style="margin-bottom:18px;"><div class="section-head"><h3>&#128100; Account (credit) sales &mdash; by customer ('+selDateLabel+')</h3></div>'+accountDetailHtml+'</div>'+
+
+    pendingCreditBillsCardHtml()+
+
+    '<div class="card" style="margin-bottom:18px;">'+
+      '<div class="section-head"><h3>&#128196; Sales Report &mdash; PDF</h3></div>'+
+      '<div class="note-box">A shareable PDF statement with total cash, cheque and credit sales, customer balances due, and full sales details for the period.</div>'+
+      '<div class="form-row" style="margin-top:10px;">'+
+        '<div class="field"><label>Report for</label><select id="mrep-mode">'+
+          '<option value="month" '+(mrMode==='month'?'selected':'')+'>Whole month</option>'+
+          '<option value="range" '+(mrMode==='range'?'selected':'')+'>Date to date</option>'+
+        '</select></div>'+
+        '<div class="field" id="mrep-month-field" style="'+(mrMode==='range'?'display:none;':'')+'"><label>Month</label><input type="month" id="mrep-month" value="'+escapeHtml(mrMonthVal)+'"></div>'+
+        '<div class="field" id="mrep-from-field" style="'+(mrMode==='month'?'display:none;':'')+'"><label>From</label><input type="date" id="mrep-from" value="'+escapeHtml(state.monthlyRepFrom||'')+'"></div>'+
+        '<div class="field" id="mrep-to-field" style="'+(mrMode==='month'?'display:none;':'')+'"><label>To</label><input type="date" id="mrep-to" value="'+escapeHtml(state.monthlyRepTo||'')+'"></div>'+
+      '</div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+        '<button class="btn btn-primary btn-sm" id="mrep-share">Share Report as PDF</button>'+
+        '<button class="btn btn-ghost btn-sm" id="mrep-download">Download PDF</button>'+
+      '</div>'+
+    '</div>'+
 
     '<div class="card" style="margin-bottom:18px;">'+
       '<div class="section-head"><h3>Search</h3></div>'+
@@ -4637,6 +4989,11 @@
   }
 
   function bindReportsEvents(){
+    var cashSummaryToggle = document.getElementById('cash-summary-toggle');
+    if(cashSummaryToggle) cashSummaryToggle.addEventListener('click', function(){
+      state.cashSummaryCollapsed = !state.cashSummaryCollapsed;
+      render();
+    });
     var repSelDate = document.getElementById('rep-sel-date');
     if(repSelDate) repSelDate.addEventListener('change', function(e){
       state.reportSelectedDate = e.target.value || todayISO();
@@ -4674,19 +5031,6 @@
       render();
     }
     if(repSearch) repSearch.addEventListener('click', applySearch);
-
-    var mrMonth = document.getElementById('mr-month');
-    if(mrMonth) mrMonth.addEventListener('change', function(e){ state.mrMonth = e.target.value || monthKey(new Date().toISOString()); });
-    var mrFrom = document.getElementById('mr-from');
-    if(mrFrom) mrFrom.addEventListener('change', function(e){ state.mrFrom = e.target.value; });
-    var mrTo = document.getElementById('mr-to');
-    if(mrTo) mrTo.addEventListener('change', function(e){ state.mrTo = e.target.value; });
-    var mrGenerate = document.getElementById('mr-generate');
-    if(mrGenerate) mrGenerate.addEventListener('click', function(){
-      state.showMonthlyReport = true;
-      render();
-    });
-
     document.querySelectorAll('[data-preset]').forEach(function(btn){
       btn.addEventListener('click', function(){
         setReportPreset(btn.getAttribute('data-preset'));
@@ -4694,213 +5038,286 @@
         render();
       });
     });
-  }
 
-  // Professional printable statement for the Monthly Report modal — a
-  // full-page letterhead-style document (not the narrow thermal
-  // receipt-wrap used elsewhere), meant to be saved/shared as a PDF via
-  // the browser's own Print dialog (Print > Save as PDF, or the Share
-  // icon inside the print preview on mobile).
-  function renderMonthlyReportModal(){
-    var d = currentMonthlyReportData();
-    var printedAt = new Date().toLocaleString();
-
-    var dayRows = d.byDay.length ? d.byDay.map(function(r){
-      return '<tr><td>'+new Date(r.date+'T00:00:00').toLocaleDateString()+'</td><td class="num">'+r.bills.length+'</td><td class="num">'+money(r.cash)+'</td><td class="num">'+money(r.cheque)+'</td><td class="num">'+money(r.credit)+'</td><td class="num">'+money(r.total)+'</td></tr>';
-    }).join('') : '<tr><td colspan="6" style="text-align:center;color:#777;">No sales in this period.</td></tr>';
-
-    var custRows = d.customerRows.length ? d.customerRows.map(function(c){
-      return '<tr><td>'+escapeHtml(c.name)+'</td><td>'+escapeHtml(c.phone)+'</td><td class="num">'+c.bills+'</td><td class="num">'+money(c.sales)+'</td><td class="num">'+money(c.received)+'</td><td class="num" style="font-weight:700;">'+money(c.balance)+'</td></tr>';
-    }).join('') : '<tr><td colspan="6" style="text-align:center;color:#777;">No account (credit) customers in this period.</td></tr>';
-
-    return ''+
-    '<div class="modal-bg" id="mr-bg"><div class="modal-box" style="max-width:760px;position:relative;">'+
-      '<button class="close-x" id="mr-close">\u2715</button>'+
-      '<div id="print-area"><div class="stmt-doc">'+
-        '<div class="stmt-head">'+
-          '<div class="stmt-shop">'+
-            '<div class="stmt-brand-row">'+
-              '<div class="stmt-mark">'+escapeHtml((state.shop.name||'S').trim().charAt(0).toUpperCase())+'</div>'+
-              '<div class="stmt-shopname">'+escapeHtml(state.shop.name)+'</div>'+
-            '</div>'+
-            (state.shop.address || state.shop.phone ? '<div class="stmt-shop-lines">'+
-              (state.shop.address ? '<div class="stmt-shopline">'+escapeHtml(state.shop.address)+'</div>' : '')+
-              (state.shop.phone ? '<div class="stmt-shopline">'+escapeHtml(state.shop.phone)+'</div>' : '')+
-            '</div>' : '')+
-          '</div>'+
-          '<div class="stmt-title-block">'+
-            '<div class="stmt-title">MONTHLY SALES STATEMENT</div>'+
-            '<div class="stmt-period">Period: '+escapeHtml(d.label)+'</div>'+
-            '<div class="stmt-printed">Printed: '+escapeHtml(printedAt)+'</div>'+
-          '</div>'+
-        '</div>'+
-        '<div class="stmt-body">'+
-
-        '<div class="stmt-summary-grid">'+
-          '<div class="stmt-sum-box cash"><div class="k">Total Cash Sales</div><div class="v">'+money(d.cashSalesTotal)+'</div></div>'+
-          '<div class="stmt-sum-box cheque"><div class="k">Total Cheque Sales</div><div class="v">'+money(d.chequeSalesTotal)+'</div></div>'+
-          '<div class="stmt-sum-box credit"><div class="k">Total Credit Sales</div><div class="v">'+money(d.creditSalesTotal)+'</div></div>'+
-          '<div class="stmt-sum-box grand"><div class="k">Grand Total Sales</div><div class="v">'+money(d.grandTotal)+'</div></div>'+
-        '</div>'+
-
-        '<div class="stmt-section"><div class="stmt-section-title">Cash Sales &mdash; Details</div>'+
-          '<table class="stmt-table"><tbody>'+
-            '<tr><td>Cash bills</td><td class="num">'+money(d.cashBillAmt)+'</td></tr>'+
-            '<tr><td>Received now (on account bills)</td><td class="num">'+money(d.acctPaidNow)+'</td></tr>'+
-            '<tr><td>Received later (old balance payments)</td><td class="num">'+money(d.acctReceivePayment)+'</td></tr>'+
-            '<tr class="stmt-total-row"><td>Total Cash Sales</td><td class="num">'+money(d.cashSalesTotal)+'</td></tr>'+
-          '</tbody></table>'+
-        '</div>'+
-
-        '<div class="stmt-section"><div class="stmt-section-title">Cheque Sales &mdash; Details</div>'+
-          '<table class="stmt-table"><tbody>'+
-            '<tr><td>Cheque bills, '+escapeHtml(d.label)+'</td><td class="num">'+money(d.chequeSalesTotal)+'</td></tr>'+
-            '<tr class="stmt-total-row"><td>Total Cheque Sales</td><td class="num">'+money(d.chequeSalesTotal)+'</td></tr>'+
-          '</tbody></table>'+
-        '</div>'+
-
-        '<div class="stmt-section"><div class="stmt-section-title">Credit Sales &mdash; Details</div>'+
-          '<table class="stmt-table"><tbody>'+
-            '<tr><td>Account bills raised this period (sale value)</td><td class="num">'+money(d.creditSalesTotal)+'</td></tr>'+
-            '<tr class="stmt-total-row"><td>Balance still due, bills raised this period</td><td class="num">'+money(d.creditBalanceTotal)+'</td></tr>'+
-          '</tbody></table>'+
-        '</div>'+
-
-        '<div class="stmt-section"><div class="stmt-section-title">Sales Details &mdash; Day by Day</div>'+
-          '<table class="stmt-table stmt-table-grid"><thead><tr><th>Date</th><th>Bills</th><th>Cash</th><th>Cheque</th><th>Credit</th><th>Total</th></tr></thead><tbody>'+
-            dayRows+
-          '</tbody></table>'+
-        '</div>'+
-
-        '<div class="stmt-section"><div class="stmt-section-title">Customers &mdash; Balance Due ('+escapeHtml(d.label)+')</div>'+
-          '<table class="stmt-table stmt-table-grid"><thead><tr><th>Customer</th><th>Phone</th><th>Bills</th><th>Sales</th><th>Received</th><th>Balance Due</th></tr></thead><tbody>'+
-            custRows+
-          '</tbody></table>'+
-          '<div class="stmt-grand-total">Total Balance Due: '+money(d.customerBalanceTotal)+'</div>'+
-        '</div>'+
-
-        '</div>'+
-        '<div class="stmt-footer">'+
-          (state.shop.footer ? '<div>'+escapeHtml(state.shop.footer)+'</div>' : '')+
-          '<div class="stmt-sign-row"><div class="stmt-sign-line">Prepared By</div><div class="stmt-sign-line">Authorized Signature</div></div>'+
-        '</div>'+
-      '</div></div>'+
-
-      '<div class="note-box" style="margin-top:12px;">Tap "Print / Save as PDF", then choose <b>Save as PDF</b> as the destination (or, on mobile, use the <b>Share</b> icon inside the print preview to send the PDF directly over WhatsApp, email, etc).</div>'+
-      '<div class="modal-actions">'+
-        '<button class="btn btn-primary btn-block" id="mr-print">&#128424; Print / Save as PDF</button>'+
-      '</div>'+
-      '<div class="modal-actions" style="margin-top:8px;">'+
-        '<button class="btn btn-amber btn-block" id="mr-share">&#128228; Share PDF</button>'+
-        '<button class="btn btn-ghost btn-block" id="mr-download">&#11015; Download PDF</button>'+
-      '</div>'+
-      '<button class="btn btn-ghost btn-block" id="mr-done" style="margin-top:8px;">Done</button>'+
-    '</div></div>';
-  }
-
-  // Renders the on-screen statement into a real PDF file (not just the
-  // browser print dialog) using html2canvas + jsPDF, so it can be shared
-  // as a file (WhatsApp/email/etc via the Web Share API) or downloaded
-  // directly. Falls back to a plain download if native sharing isn't
-  // available on the device/browser.
-  async function buildMonthlyReportPDFBlob(){
-    var target = document.querySelector('#print-area .stmt-doc');
-    if(!target || !window.html2canvas || !window.jspdf) return null;
-    var canvas = await html2canvas(target, {scale:2, backgroundColor:'#ffffff', useCORS:true});
-    var imgData = canvas.toDataURL('image/png');
-    var jsPDF = window.jspdf.jsPDF;
-    var pdf = new jsPDF('p','pt','a4');
-    var pageWidth = pdf.internal.pageSize.getWidth();
-    var pageHeight = pdf.internal.pageSize.getHeight();
-    // Professional A4 page margin (~10mm) so the statement doesn't run
-    // edge-to-edge on the printed/PDF page.
-    var margin = 28;
-    var contentWidth = pageWidth - margin*2;
-    var contentHeight = pageHeight - margin*2;
-    var imgWidth = contentWidth;
-    var imgHeight = canvas.height * imgWidth / canvas.width;
-    var heightLeft = imgHeight;
-    var position = margin;
-    pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
-    heightLeft -= contentHeight;
-    while(heightLeft > 0){
-      position = margin - (imgHeight - heightLeft);
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
-      heightLeft -= contentHeight;
-    }
-    return pdf.output('blob');
-  }
-
-  function monthlyReportFileName(){
-    return 'monthly-statement-'+(state.mrMonth || todayISO())+'.pdf';
-  }
-
-  async function downloadMonthlyReportPDF(){
-    var btn = document.getElementById('mr-download');
-    if(btn){ btn.disabled = true; btn.textContent = 'Preparing…'; }
-    try{
-      var blob = await buildMonthlyReportPDFBlob();
-      if(!blob){ alert('Could not create the PDF.'); return; }
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url; a.download = monthlyReportFileName();
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
-    }catch(e){
-      alert('Could not create the PDF: '+(e.message||e));
-    }finally{
-      if(btn){ btn.disabled = false; btn.innerHTML = '&#11015; Download PDF'; }
-    }
-  }
-
-  async function shareMonthlyReportPDF(){
-    var btn = document.getElementById('mr-share');
-    if(btn){ btn.disabled = true; btn.textContent = 'Preparing…'; }
-    try{
-      var blob = await buildMonthlyReportPDFBlob();
-      if(!blob){ alert('Could not create the PDF.'); return; }
-      var fileName = monthlyReportFileName();
-      var file = null;
-      try{ file = new File([blob], fileName, {type:'application/pdf'}); }catch(e){ /* File ctor unsupported */ }
-      if(file && navigator.canShare && navigator.canShare({files:[file]})){
-        try{
-          await navigator.share({files:[file], title:'Monthly Statement', text: state.shop.name+' — Monthly Statement'});
-          return;
-        }catch(e){
-          if(e && e.name==='AbortError') return; // user cancelled the share sheet
-          // fall through to download
-        }
-      }
-      // Fallback: just download the PDF so it can be shared manually.
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url; a.download = fileName;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
-    }catch(e){
-      alert('Could not share the PDF: '+(e.message||e));
-    }finally{
-      if(btn){ btn.disabled = false; btn.innerHTML = '&#128228; Share PDF'; }
-    }
-  }
-
-  function bindMonthlyReportModal(){
-    var closeBtn = document.getElementById('mr-close');
-    var doneBtn = document.getElementById('mr-done');
-    var printBtn = document.getElementById('mr-print');
-    var shareBtn = document.getElementById('mr-share');
-    var downloadBtn = document.getElementById('mr-download');
-    function closeIt(){ state.showMonthlyReport = false; render(); }
-    if(closeBtn) closeBtn.addEventListener('click', closeIt);
-    if(doneBtn) doneBtn.addEventListener('click', closeIt);
-    if(printBtn) printBtn.addEventListener('click', function(){
-      requestAnimationFrame(function(){
-        requestAnimationFrame(function(){ window.print(); });
+    // Pending credit bills — expand/collapse per customer
+    document.querySelectorAll('[data-toggle-pending-cust]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var key = btn.getAttribute('data-toggle-pending-cust');
+        state.pendingCreditExpandedCust = (state.pendingCreditExpandedCust===key) ? null : key;
+        render();
       });
     });
-    if(shareBtn) shareBtn.addEventListener('click', shareMonthlyReportPDF);
-    if(downloadBtn) downloadBtn.addEventListener('click', downloadMonthlyReportPDF);
+
+    // Monthly / date-range PDF report
+    var mrepMode = document.getElementById('mrep-mode');
+    if(mrepMode) mrepMode.addEventListener('change', function(e){
+      state.monthlyRepMode = e.target.value;
+      render();
+    });
+    var mrepMonth = document.getElementById('mrep-month');
+    if(mrepMonth) mrepMonth.addEventListener('change', function(e){ state.monthlyRepMonth = e.target.value; });
+    var mrepFrom = document.getElementById('mrep-from');
+    if(mrepFrom) mrepFrom.addEventListener('change', function(e){ state.monthlyRepFrom = e.target.value; });
+    var mrepTo = document.getElementById('mrep-to');
+    if(mrepTo) mrepTo.addEventListener('change', function(e){ state.monthlyRepTo = e.target.value; });
+    var mrepShare = document.getElementById('mrep-share');
+    if(mrepShare) mrepShare.addEventListener('click', function(){ shareMonthlyReportPdf(); });
+    var mrepDownload = document.getElementById('mrep-download');
+    if(mrepDownload) mrepDownload.addEventListener('click', function(){ downloadMonthlyReportPdf(); });
+  }
+
+  // ---------------- MONTHLY / RANGE SALES REPORT (PDF) ----------------
+  // Resolves the report period from the form: either the whole selected
+  // calendar month, or a custom From/To date range.
+  function monthlyReportRange(){
+    if(state.monthlyRepMode==='range'){
+      var f = state.monthlyRepFrom||'', t = state.monthlyRepTo||'';
+      var label = (f||'…')+' to '+(t||'…');
+      return {from:f, to:t, label:label};
+    }
+    var m = state.monthlyRepMonth || todayISO().slice(0,7); // 'YYYY-MM'
+    var y = parseInt(m.slice(0,4),10), mo = parseInt(m.slice(5,7),10);
+    var lastDay = new Date(y, mo, 0).getDate();
+    var from = m+'-01', to = m+'-'+String(lastDay).padStart(2,'0');
+    var label = (isNaN(y)||isNaN(mo)) ? m : new Date(y, mo-1, 1).toLocaleDateString(undefined,{month:'long', year:'numeric'});
+    return {from:from, to:to, label:label};
+  }
+
+  // Same cash/cheque/credit definitions used on the Reports page banners
+  // and the "…By Date" mirror tabs, aggregated across a whole date range
+  // instead of a single day.
+  function reportRangeSummary(from, to){
+    var inRange = function(day){ return (!from || day>=from) && (!to || day<=to); };
+    var cashBills=[], chequeBills=[], creditBills=[];
+    var acctPaidNow=0, acctReceivePayment=0;
+    state.bills.forEach(function(b){
+      var day = localDay(b.dateISO);
+      if(inRange(day)){
+        if(b.payment==='cash') cashBills.push(b);
+        else if(b.payment==='cheque') chequeBills.push(b);
+        else if(b.payment==='account') creditBills.push(b);
+      }
+      if(b.payment==='account'){
+        (b.payments||[]).forEach(function(p){
+          if(!inRange(localDay(p.dateISO))) return;
+          if(p.note==='Payment at time of sale') acctPaidNow += (p.amount||0);
+          else acctReceivePayment += (p.amount||0);
+        });
+      }
+    });
+    var sortByDate = function(a,b){ return new Date(a.dateISO)-new Date(b.dateISO); };
+    cashBills.sort(sortByDate); chequeBills.sort(sortByDate); creditBills.sort(sortByDate);
+    var cashBillTotal = cashBills.reduce(function(s,b){return s+b.total;},0);
+    var chequeTotal = chequeBills.reduce(function(s,b){return s+b.total;},0);
+    var creditBillTotal = creditBills.reduce(function(s,b){return s+b.total;},0);
+    var creditBalanceDue = creditBills.reduce(function(s,b){return s+billBalance(b);},0);
+    var allInRange = state.bills.filter(function(b){ return inRange(localDay(b.dateISO)); });
+    return {
+      cashBills:cashBills, chequeBills:chequeBills, creditBills:creditBills,
+      cashBillTotal:cashBillTotal, acctPaidNow:acctPaidNow, acctReceivePayment:acctReceivePayment,
+      totalCashSales: cashBillTotal+acctPaidNow+acctReceivePayment,
+      chequeTotal:chequeTotal, creditBillTotal:creditBillTotal, creditBalanceDue:creditBalanceDue,
+      allBills: allInRange,
+      totalRevenue: allInRange.reduce(function(s,b){return s+b.total;},0),
+      totalDiscount: allInRange.reduce(function(s,b){return s+(b.discount||0);},0),
+      totalItemsSold: allInRange.reduce(function(s,b){return s+billItemCount(b);},0)
+    };
+  }
+
+  // Builds the professional PDF statement. Returns null if the jsPDF
+  // library (loaded from CDN) hasn't finished loading yet.
+  function buildMonthlyReportPdf(range){
+    var ctor = window.jspdf && window.jspdf.jsPDF;
+    if(!ctor) return null;
+    var doc = new ctor({unit:'mm', format:'a4'});
+    var pageW = doc.internal.pageSize.getWidth(), pageH = doc.internal.pageSize.getHeight();
+    var marginL = 14, marginR = 14, usableW = pageW-marginL-marginR;
+    var INK=[15,61,117], DIM=[92,112,137], LINE=[217,228,245], RED=[192,45,45], GREEN=[22,101,52], TEXT=[30,34,48];
+    var y = 18;
+
+    function newPageIfNeeded(need){
+      if(y+need > pageH-18){ doc.addPage(); y = 18; }
+    }
+    function sectionTitle(text){
+      newPageIfNeeded(12);
+      doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(INK[0],INK[1],INK[2]);
+      doc.text(text, marginL, y);
+      y += 2;
+      doc.setDrawColor(INK[0],INK[1],INK[2]); doc.setLineWidth(0.4);
+      doc.line(marginL, y, pageW-marginR, y);
+      y += 6;
+    }
+    function kvRow(label, value, bold, color){
+      newPageIfNeeded(6);
+      doc.setFont('helvetica', bold?'bold':'normal'); doc.setFontSize(9);
+      var c = color || TEXT;
+      doc.setTextColor(c[0],c[1],c[2]);
+      doc.text(label, marginL+2, y);
+      doc.text(String(value), pageW-marginR-1, y, {align:'right'});
+      y += 5.6;
+    }
+    function table(headers, rows, colWidths, aligns, emptyMsg){
+      if(!rows.length){
+        newPageIfNeeded(6);
+        doc.setFont('helvetica','normal'); doc.setFontSize(8.8); doc.setTextColor(DIM[0],DIM[1],DIM[2]);
+        doc.text(emptyMsg||'No records for this period.', marginL+2, y);
+        y += 6.5;
+        return;
+      }
+      var lineH = 5.4;
+      newPageIfNeeded(lineH+2);
+      doc.setFillColor(INK[0],INK[1],INK[2]);
+      doc.rect(marginL, y-3.9, usableW, lineH+1.2, 'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(255,255,255);
+      var x = marginL;
+      headers.forEach(function(h,i){
+        if(aligns[i]==='right') doc.text(h, x+colWidths[i]-2, y, {align:'right'});
+        else doc.text(h, x+2, y);
+        x += colWidths[i];
+      });
+      y += lineH+1.6;
+      doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(TEXT[0],TEXT[1],TEXT[2]);
+      rows.forEach(function(r, ri){
+        newPageIfNeeded(lineH);
+        if(ri%2===1){ doc.setFillColor(244,248,253); doc.rect(marginL, y-3.9, usableW, lineH, 'F'); }
+        var x2 = marginL;
+        r.forEach(function(cell,ci){
+          var txt = String(cell);
+          if(aligns[ci]==='right') doc.text(txt, x2+colWidths[ci]-2, y, {align:'right'});
+          else doc.text(txt, x2+2, y);
+          x2 += colWidths[ci];
+        });
+        y += lineH;
+      });
+      doc.setDrawColor(LINE[0],LINE[1],LINE[2]); doc.setLineWidth(0.3);
+      doc.line(marginL, y-lineH+1.6, pageW-marginR, y-lineH+1.6);
+      y += 3;
+    }
+
+    // ----- Header -----
+    doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(INK[0],INK[1],INK[2]);
+    doc.text(state.shop.name||'BILL APP', marginL, y);
+    var hy = y+5.5;
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(DIM[0],DIM[1],DIM[2]);
+    if(state.shop.address){ doc.text(state.shop.address, marginL, hy); hy += 4.4; }
+    if(state.shop.phone){ doc.text('Tel: '+state.shop.phone, marginL, hy); hy += 4.4; }
+
+    doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(INK[0],INK[1],INK[2]);
+    doc.text('SALES REPORT', pageW-marginR, 18, {align:'right'});
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(DIM[0],DIM[1],DIM[2]);
+    doc.text('Period: '+range.label, pageW-marginR, 24, {align:'right'});
+    doc.text('Generated: '+new Date().toLocaleString(), pageW-marginR, 29, {align:'right'});
+
+    y = Math.max(hy, 32);
+    doc.setDrawColor(INK[0],INK[1],INK[2]); doc.setLineWidth(0.7);
+    doc.line(marginL, y, pageW-marginR, y);
+    y += 9;
+
+    var data = reportRangeSummary(range.from, range.to);
+
+    // ----- Summary boxes -----
+    var boxW = (usableW-8)/3, boxH = 20;
+    [
+      {label:'TOTAL CASH SALES', val:data.totalCashSales, color:GREEN},
+      {label:'TOTAL CHEQUE SALES', val:data.chequeTotal, color:INK},
+      {label:'TOTAL CREDIT SALES', val:data.creditBillTotal, color:RED}
+    ].forEach(function(b,i){
+      var bx = marginL + i*(boxW+4);
+      doc.setDrawColor(LINE[0],LINE[1],LINE[2]); doc.setFillColor(248,250,253);
+      doc.roundedRect(bx, y, boxW, boxH, 1.6, 1.6, 'FD');
+      doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(DIM[0],DIM[1],DIM[2]);
+      doc.text(b.label, bx+4, y+7);
+      doc.setFont('helvetica','bold'); doc.setFontSize(12.5); doc.setTextColor(b.color[0],b.color[1],b.color[2]);
+      doc.text(money(b.val), bx+4, y+15.5);
+    });
+    y += boxH+10;
+
+    // ----- Cash Sales Details -----
+    sectionTitle('Cash Sales Details');
+    table(['Date','Bill No','Customer','Amount'],
+      data.cashBills.map(function(b){ return [localDay(b.dateISO), b.no||'', b.customerName||'-', money(b.total)]; }),
+      [26,32,usableW-26-32-40,40], ['left','left','left','right'], 'No cash sales in this period.');
+    kvRow('Cash bills subtotal', money(data.cashBillTotal));
+    kvRow('Account payments received (at time of sale)', money(data.acctPaidNow));
+    kvRow('Account payments received (against old balance)', money(data.acctReceivePayment));
+    kvRow('TOTAL CASH SALES', money(data.totalCashSales), true, GREEN);
+    y += 4;
+
+    // ----- Cheque Sales Details -----
+    sectionTitle('Cheque Sales Details');
+    table(['Date','Bill No','Cheque No','Customer','Amount'],
+      data.chequeBills.map(function(b){ return [localDay(b.dateISO), b.no||'', b.chequeNo||'-', b.customerName||'-', money(b.total)]; }),
+      [24,26,26,usableW-24-26-26-36,36], ['left','left','left','left','right'], 'No cheque sales in this period.');
+    kvRow('TOTAL CHEQUE SALES', money(data.chequeTotal), true, INK);
+    y += 4;
+
+    // ----- Credit Sales Details -----
+    sectionTitle('Credit Sales Details');
+    table(['Date','Bill No','Customer','Bill Amount','Balance Due'],
+      data.creditBills.map(function(b){ return [localDay(b.dateISO), b.no||'', b.customerName||'-', money(b.total), money(billBalance(b))]; }),
+      [24,28,usableW-24-28-36-36,36,36], ['left','left','left','right','right'], 'No credit sales in this period.');
+    kvRow('Total credit sales (bill amount)', money(data.creditBillTotal));
+    kvRow('Balance due outstanding (this period\'s bills)', money(data.creditBalanceDue), true, RED);
+    y += 4;
+
+    // ----- Customer Balances Due -----
+    sectionTitle('Customer Balances Due (as of '+new Date().toLocaleDateString()+')');
+    var owing = buildCustomerStats().filter(function(c){ return c.totalBalance>0.004; }).sort(function(a,b){ return b.totalBalance-a.totalBalance; });
+    table(['Customer','Phone','Balance Due'],
+      owing.map(function(c){ return [c.name, c.phone||'-', money(c.totalBalance)]; }),
+      [usableW-40-40,40,40], ['left','left','right'], 'No customers currently owe a balance.');
+    var totalOwing = owing.reduce(function(s,c){ return s+c.totalBalance; },0);
+    kvRow('TOTAL OUTSTANDING (all customers)', money(totalOwing), true, RED);
+    y += 4;
+
+    // ----- Sales Summary -----
+    sectionTitle('Sales Summary');
+    kvRow('Total bills (period)', data.allBills.length);
+    kvRow('Total items sold', data.totalItemsSold);
+    kvRow('Total revenue (period)', money(data.totalRevenue));
+    kvRow('Total discount given', money(data.totalDiscount));
+    kvRow('Average bill value', money(data.allBills.length ? data.totalRevenue/data.allBills.length : 0));
+
+    // ----- Footer on every page -----
+    var pageCount = doc.internal.getNumberOfPages();
+    for(var p=1; p<=pageCount; p++){
+      doc.setPage(p);
+      doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(DIM[0],DIM[1],DIM[2]);
+      if(state.shop.footer) doc.text(state.shop.footer, marginL, pageH-10);
+      doc.text('Page '+p+' of '+pageCount, pageW-marginR, pageH-10, {align:'right'});
+    }
+    return doc;
+  }
+
+  function monthlyReportFileName(range){
+    var shopName = (state.shop.name||'Shop').replace(/[^\w\-]+/g,'_');
+    return shopName+'_Sales_Report_'+(range.from||'start')+'_to_'+(range.to||'end')+'.pdf';
+  }
+
+  async function shareMonthlyReportPdf(){
+    var range = monthlyReportRange();
+    if(state.monthlyRepMode==='range' && (!range.from || !range.to)){ alert('Pick both a From and To date first.'); return; }
+    var doc = buildMonthlyReportPdf(range);
+    if(!doc){ alert('The PDF library is still loading — please try again in a moment.'); return; }
+    var fileName = monthlyReportFileName(range);
+    var blob = doc.output('blob');
+    var file;
+    try{ file = new File([blob], fileName, {type:'application/pdf'}); }catch(e){ /* File ctor unsupported */ }
+    if(file && navigator.canShare && navigator.canShare({files:[file]})){
+      try{
+        await navigator.share({files:[file], title:'Sales Report — '+range.label, text:(state.shop.name||'')+' — Sales Report for '+range.label});
+        return;
+      }catch(e){ if(e && e.name==='AbortError') return; }
+    }
+    doc.save(fileName);
+  }
+
+  function downloadMonthlyReportPdf(){
+    var range = monthlyReportRange();
+    if(state.monthlyRepMode==='range' && (!range.from || !range.to)){ alert('Pick both a From and To date first.'); return; }
+    var doc = buildMonthlyReportPdf(range);
+    if(!doc){ alert('The PDF library is still loading — please try again in a moment.'); return; }
+    doc.save(monthlyReportFileName(range));
   }
 
   // ---------------- PROFIT (admin only) ----------------
@@ -5049,18 +5466,58 @@
 
   // ---------------- ADMIN ----------------
   function renderAdmin(){
-    var tabs = ['items','shop'];
+    var tabs = ['items','shop','history'];
     var tabBtns = tabs.map(function(t){
-      var label = t==='items'?'Items & Prices':'Shop & Bill Settings';
+      var label = t==='items'?'Items & Prices':(t==='shop'?'Shop & Bill Settings':'Deleted &amp; Returns History');
       return '<button class="nav-item" style="width:auto;display:inline-flex;'+(state.adminTab===t?'background:var(--green);color:#fff;':'background:var(--paper-dark);color:var(--ink);')+'border-radius:20px;padding:7px 14px;margin-right:8px;" data-atab="'+t+'">'+label+'</button>';
     }).join('');
 
     var body = '';
     if(state.adminTab==='items') body = renderAdminItems();
+    else if(state.adminTab==='history') body = renderAdminHistory();
     else body = renderAdminShop();
 
     return '<h1 class="page-title">Admin</h1><p class="page-sub">Fully customize items and bill details.</p>'+
       '<div style="margin-bottom:16px;">'+tabBtns+'</div>'+body;
+  }
+
+  // Read-only audit trail: bills deleted ("added in error") and every
+  // bill/stock return, newest first. Nothing here can be undone or edited —
+  // it's just a record so an admin can see what happened and who did it.
+  function renderAdminHistory(){
+    var delRows = (state.deletedBills||[]).slice().sort(function(a,b){ return new Date(b.dateISO)-new Date(a.dateISO); }).map(function(d){
+      var itemsSummary = (d.items||[]).map(function(it){ return escapeHtml(it.name)+' x'+it.qty; }).join(', ');
+      return '<div class="list-row">'+
+        '<div class="main">'+
+          '<div class="t1">'+escapeHtml(d.billNo||'—')+(d.customerName?' &middot; '+escapeHtml(d.customerName):'')+'</div>'+
+          '<div class="t2">Deleted '+new Date(d.dateISO).toLocaleString()+' by '+escapeHtml(d.deletedBy||'—')+'</div>'+
+          (itemsSummary ? '<div class="t2" style="margin-top:2px;">'+itemsSummary+'</div>' : '')+
+        '</div>'+
+        '<span class="mono" style="font-weight:700;">'+money(d.total)+'</span>'+
+      '</div>';
+    }).join('');
+
+    var retRows = (state.returns||[]).slice().sort(function(a,b){ return new Date(b.dateISO)-new Date(a.dateISO); }).map(function(r){
+      var itemsSummary = (r.items||[]).map(function(it){ return escapeHtml(it.name)+' x'+it.qty; }).join(', ');
+      return '<div class="list-row">'+
+        '<div class="main">'+
+          '<div class="t1">'+(r.type==='stock'?'Stock Return':'Bill Return')+(r.billNo?' &middot; '+escapeHtml(r.billNo):'')+(r.customerName?' &middot; '+escapeHtml(r.customerName):'')+'</div>'+
+          '<div class="t2">'+new Date(r.dateISO).toLocaleString()+' by '+escapeHtml(r.processedBy||'—')+(r.reason?' &middot; '+escapeHtml(r.reason):'')+'</div>'+
+          (itemsSummary ? '<div class="t2" style="margin-top:2px;">'+itemsSummary+'</div>' : '')+
+        '</div>'+
+        '<span class="mono" style="font-weight:700;">'+money(r.amount)+'</span>'+
+      '</div>';
+    }).join('');
+
+    return ''+
+      '<div class="card" style="margin-bottom:14px;">'+
+        '<div class="section-head"><h3>Deleted Bills ('+(state.deletedBills||[]).length+')</h3></div>'+
+        (delRows || '<div class="empty-note">No bills have been deleted.</div>')+
+      '</div>'+
+      '<div class="card">'+
+        '<div class="section-head"><h3>Returns ('+(state.returns||[]).length+')</h3></div>'+
+        (retRows || '<div class="empty-note">No returns recorded yet.</div>')+
+      '</div>';
   }
 
   function renderAdminItems(){
@@ -5079,34 +5536,51 @@
     if(form){
       var isEdit = !!form.id;
       var editingLastCost = isEdit ? itemLastPurchasePrice(state.items.find(function(i){ return i.id===form.id; }) || form) : null;
-      formHtml = '<div class="card" style="margin-top:14px;">'+
-        '<div class="section-head"><h3>'+(isEdit?'Edit item':'Add new item')+'</h3></div>'+
-        '<div class="form-row">'+
-          '<div class="field"><label>Name</label><input id="f-name" value="'+escapeHtml(form.name)+'"></div>'+
-          '<div class="field"><label>Category</label><input id="f-cat" value="'+escapeHtml(form.category)+'"></div>'+
-        '</div>'+
-        '<div class="form-row">'+
-          '<div class="field"><label>Selling price ('+state.shop.currency+')</label><input id="f-price" type="number" min="0" inputmode="decimal" value="'+form.price+'"></div>'+
+      formHtml = '<div class="modal-bg" id="item-modal-bg">'+
+        '<div class="modal-box" style="max-width:440px;">'+
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">'+
+            '<div>'+
+              '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);font-weight:600;margin-bottom:2px;">'+(isEdit?'Edit Item':'New Item')+'</div>'+
+              '<div style="font-size:19px;font-weight:800;color:var(--ink);">'+(isEdit?escapeHtml(form.name||'Item'):'Add new item')+'</div>'+
+            '</div>'+
+            '<button id="f-close" style="background:var(--paper-dark);border:none;border-radius:50%;width:34px;height:34px;font-size:18px;line-height:1;cursor:pointer;color:var(--text-dim);" title="Close">&times;</button>'+
+          '</div>'+
+          '<div class="field">'+
+            '<label>Item photo (optional)</label>'+
+            '<div style="display:flex;gap:12px;align-items:center;">'+
+              (form.image ?
+                '<img class="logo-preview" src="'+form.image+'" style="width:64px;height:64px;object-fit:cover;border-radius:var(--radius-sm);margin:0;">'
+                :
+                '<div style="width:64px;height:64px;border-radius:var(--radius-sm);background:var(--paper-dark);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:var(--text-dim);flex-shrink:0;">'+escapeHtml((form.name||'?').charAt(0).toUpperCase())+'</div>'
+              )+
+              '<div style="display:flex;flex-direction:column;gap:6px;">'+
+                '<input type="file" accept="image/*" id="f-image">'+
+                (form.image ? '<button class="btn btn-ghost btn-sm" id="f-image-remove" type="button" style="width:fit-content;">Remove photo</button>' : '')+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+          '<div class="form-row">'+
+            '<div class="field"><label>Name</label><input id="f-name" value="'+escapeHtml(form.name)+'" placeholder="e.g. Coca-Cola 500ml"></div>'+
+            '<div class="field"><label>Category</label><input id="f-cat" value="'+escapeHtml(form.category)+'" placeholder="e.g. Beverages"></div>'+
+          '</div>'+
+          '<div class="form-row">'+
+            '<div class="field"><label>Selling price ('+state.shop.currency+')</label><input id="f-price" type="number" min="0" inputmode="decimal" value="'+form.price+'"></div>'+
+            (isEdit ?
+              '<div class="field"><label>Stock</label><input value="'+form.stock+' units" disabled style="background:var(--paper-dark);color:var(--text-dim);"></div>'
+              :
+              '<div class="field"><label>Initial stock qty</label><input id="f-stock" type="number" min="0" inputmode="numeric" value="'+form.stock+'"></div>'
+            )+
+          '</div>'+
           (isEdit ?
-            '<div class="field"><label>Stock</label><input value="'+form.stock+' units" disabled style="background:var(--paper-dark);color:var(--text-dim);"></div>'
+            '<div class="note-box">Last purchase price: '+(editingLastCost!=null?money(editingLastCost):'—')+'. Selling price above applies to all stock of this item. To add more stock (and record what it cost), use +Restock on the Stock page — earlier stock keeps its original purchase price.</div>'
             :
-            '<div class="field"><label>Initial stock qty</label><input id="f-stock" type="number" min="0" inputmode="numeric" value="'+form.stock+'"></div>'
+            '<div class="form-row"><div class="field"><label>Purchase price / unit ('+state.shop.currency+')</label><input id="f-purchase-price" type="number" min="0" step="0.01" inputmode="decimal" value="'+(form.purchasePrice||0)+'"></div></div>'
           )+
-        '</div>'+
-        (isEdit ?
-          '<div class="note-box">Last purchase price: '+(editingLastCost!=null?money(editingLastCost):'—')+'. Selling price above applies to all stock of this item. To add more stock (and record what it cost), use +Restock on the Stock page — earlier stock keeps its original purchase price.</div>'
-          :
-          '<div class="form-row"><div class="field"><label>Purchase price / unit ('+state.shop.currency+')</label><input id="f-purchase-price" type="number" min="0" step="0.01" inputmode="decimal" value="'+(form.purchasePrice||0)+'"></div></div>'
-        )+
-        '<div class="field">'+
-          '<label>Item photo (optional)</label>'+
-          (form.image ? '<img class="logo-preview" src="'+form.image+'">' : '')+
-          '<div style="display:flex;gap:8px;align-items:center;">'+
-            '<input type="file" accept="image/*" id="f-image">'+
-            (form.image ? '<button class="btn btn-ghost btn-sm" id="f-image-remove" type="button">Remove photo</button>' : '')+
+          '<div style="display:flex;gap:10px;margin-top:16px;">'+
+            '<button class="btn btn-ghost" id="f-cancel" style="flex:1;">Cancel</button>'+
+            '<button class="btn btn-primary" id="f-save" style="flex:2;font-size:15px;">&#10003; Save item</button>'+
           '</div>'+
         '</div>'+
-        '<div style="display:flex;gap:8px;"><button class="btn btn-primary" id="f-save">Save item</button><button class="btn btn-ghost" id="f-cancel">Cancel</button></div>'+
       '</div>';
     }
 
@@ -5180,7 +5654,7 @@
         }).join('')+
       '</div>'+
       '<div class="form-row" style="margin-top:12px;align-items:flex-end;">'+
-        '<div class="field" style="max-width:160px;"><label>Custom color</label><input type="color" id="s-theme-custom" value="'+escapeHtml(s.themeColor||'#DC2626')+'" style="width:100%;height:40px;padding:2px;border:1.5px solid var(--line);border-radius:var(--radius-sm);background:var(--white);cursor:pointer;"></div>'+
+        '<div class="field" style="max-width:160px;"><label>Custom color</label><input type="color" id="s-theme-custom" value="'+escapeHtml(s.themeColor||'#B71C1C')+'" style="width:100%;height:40px;padding:2px;border:1.5px solid var(--line);border-radius:var(--radius-sm);background:var(--white);cursor:pointer;"></div>'+
       '</div>'+
     '</div>'+
     '<div class="card">'+
@@ -5290,8 +5764,13 @@
       state.itemForm = null;
       render();
     });
+    function closeItemModal(){ state.itemForm=null; render(); }
     var fCancel = document.getElementById('f-cancel');
-    if(fCancel) fCancel.addEventListener('click', function(){ state.itemForm=null; render(); });
+    if(fCancel) fCancel.addEventListener('click', closeItemModal);
+    var fClose = document.getElementById('f-close');
+    if(fClose) fClose.addEventListener('click', closeItemModal);
+    var itemModalBg = document.getElementById('item-modal-bg');
+    if(itemModalBg) itemModalBg.addEventListener('click', function(e){ if(e.target===itemModalBg) closeItemModal(); });
 
     function captureItemFormFields(){
       state.itemForm.name = document.getElementById('f-name').value;
@@ -5492,7 +5971,6 @@
     if(state.view==='accounts' || state.view==='stock' || state.view==='reports' || state.view==='customers') bindPageActions();
     if(state.showReceipt) bindReceiptModal();
     if(state.showPaymentReceipt) bindPaymentReceiptModal();
-    if(state.showMonthlyReport) bindMonthlyReportModal();
     if(state.printerModalOpen) bindPrinterSettingsModal();
 
     var topbarReconnect = document.getElementById('topbar-reconnect-printer');
@@ -5525,7 +6003,6 @@
   }
 
   boot();
-  startBackgroundSync();
 })();
 </script>
 </body>
