@@ -2359,7 +2359,8 @@
           storageSyncTab('Cash In Hand', CASH_HEADERS, buildCashInHandRows()),
           storageSyncTab('Logo', LOGO_HEADERS, buildLogoRows()),
           storageSyncTab('Printers', PRINTERS_HEADERS, buildPrintersRows()),
-          storageSyncTab('Returns', RETURNS_HEADERS, buildReturnsRows())
+          storageSyncTab('Returns', RETURNS_HEADERS, buildReturnsRows()),
+          storageSyncTab('Bill Items (Item-wise)', BILL_ITEMS_HEADERS, buildBillItemsRows())
         ];
     Promise.all(tasks).catch(function(){}).then(function(){ sheetSyncInFlight = false; });
   }
@@ -2621,6 +2622,34 @@
         r.reason||'',
         r.processedBy||''
       ];
+    });
+    return rows;
+  }
+
+  // NEW TAB — "Bill Items (Item-wise)": one row per item on every bill, with
+  // the same Bill No / Date / Customer / Phone / Balance Due repeated on each
+  // of that bill's rows. Read-only mirror built from state.bills; it does not
+  // write to or change any existing data, tab or function.
+  //   Amount      = that item's line amount (price x qty).
+  //   Balance Due = the bill's outstanding balance (same value on every row of
+  //                 the bill, so don't SUM this column across rows).
+  var BILL_ITEMS_HEADERS = ['Bill No','Date','Customer','Phone','Item','Qty','Amount','Balance Due'];
+  function buildBillItemsRows(){
+    var rows = [];
+    var bills = (state.bills||[]).slice().sort(function(a,b){ return new Date(a.dateISO)-new Date(b.dateISO); });
+    bills.forEach(function(b){
+      var day = localDay(b.dateISO);                 // yyyy-mm-dd (Asia/Colombo)
+      var p = day.split('-');
+      var dateStr = p.length===3 ? (p[2]+'/'+p[1]+'/'+p[0]) : day;   // dd/mm/yyyy
+      var balance = billBalance(b);
+      (b.items||[]).forEach(function(it){
+        var qty = Number(it.qty)||0;
+        var price = Number(it.price)||0;
+        rows.push([
+          b.no||'', dateStr, b.customerName||'', b.customerPhone||'',
+          it.name||'', qty, Math.round(price*qty*100)/100, balance
+        ]);
+      });
     });
     return rows;
   }
